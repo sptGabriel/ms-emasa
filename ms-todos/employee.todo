@@ -1,0 +1,7 @@
+add a new employee:
+1-check if the employee registration already exists
+2- send a message to the department's service to:
+check the existence of the department
+3-department service sends response
+4-send a message to the user registration service to assign a 
+new user to the employee and send a response to the user, asynchronously

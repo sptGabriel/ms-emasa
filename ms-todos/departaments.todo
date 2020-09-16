@@ -1,0 +1,7 @@
+add new departament:
+
+1-verify if exists departament name
+2- if exists manager_id on request, send message to employee service 
+to check if employee exists.
+3- if the manager exists check if he is already manager of a department
+4- send response to user.

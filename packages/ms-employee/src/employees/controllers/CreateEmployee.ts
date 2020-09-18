@@ -2,8 +2,8 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { BaseController } from 'shared/contracts/BaseController';
 import { AddEmployee } from '../dtos/Employee.dto';
 export class CreateEmployee extends BaseController {
-  constructor(path: string, router: Router) {
-    super(path, router);
+  constructor() {
+    super('/employee', Router());
   }
   public initializeRoutes(): void {}
   private createEmployee = async (

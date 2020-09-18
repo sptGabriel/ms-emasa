@@ -30,7 +30,7 @@ services:
       POSTGRES_PASSWORD: kong
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - "5434:5434"
+      - "5435:5435"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "kong"]
       interval: 30s
@@ -179,7 +179,7 @@ services:
     networks:
       - kong-net
     ports:
-      - "5432:5432"
+      - "5434:5434"
   ms-employee-db:
     image: postgres
     container_name: ms-employee-db
@@ -194,7 +194,7 @@ services:
     networks:
       - kong-net
     ports:
-      - "5432:5432"
+      - "5433:5433"
   ms-departament-db:
     image: postgres
     container_name: ms-departament-db
@@ -209,7 +209,7 @@ services:
     networks:
       - kong-net
     ports:
-      - "5433:5433"
+      - "5432:5432"
   rabbitmq:
     build: 
       context: .

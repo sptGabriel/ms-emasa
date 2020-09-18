@@ -10,7 +10,7 @@ import {
   IsEmpty,
   NotEquals,
 } from 'class-validator';
-export class addDepartament {
+export class AddDepartament {
   constructor(data: { departament_name: string; manager_id: string }) {
     this.departament_name = data.departament_name;
     this.manager_id = data.manager_id;

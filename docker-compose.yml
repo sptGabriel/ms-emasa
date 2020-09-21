@@ -179,7 +179,7 @@ services:
     networks:
       - kong-net
     ports:
-      - "5434:5434"
+      - "5434:5432"
   ms-employee-db:
     image: postgres
     container_name: ms-employee-db
@@ -194,7 +194,7 @@ services:
     networks:
       - kong-net
     ports:
-      - "5433:5433"
+      - "5433:5432"
   ms-departament-db:
     image: postgres
     container_name: ms-departament-db

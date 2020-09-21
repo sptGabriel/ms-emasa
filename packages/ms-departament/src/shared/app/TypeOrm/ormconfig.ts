@@ -8,7 +8,7 @@ const config: ConnectionOptions = {
   username: 'emasa',
   password: 'emasa03210',
   database: 'emasa_ti',
-  entities: [rootDir + '/departaments/models/*.{js,ts}'],
+  entities: [rootDir + '/modules/**/infra/entities/*.{js,ts}'],
   migrations: [rootDir + '/shared/app/typeorm/migrations/**/*.{js,ts}'],
   subscribers: [rootDir + '/subscribers/**/*.{js,ts}'],
   cli: {

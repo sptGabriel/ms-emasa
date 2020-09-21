@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "commit": "git-cz",
-    "start:dev": "ts-node-dev --inspect --respawn --transpile-only --ignore-watch node_modules -r tsconfig-paths/register src/index.ts",
+    "start:dev": "ts-node-dev  --respawn --transpile-only --ignore-watch node_modules -r tsconfig-paths/register src/shared/app/index.ts",
     "start:debug": "node start --debug --watch",
     "start:prod": "node --harmony-top-level-await --experimental-modules --es-module-specifier-resolution=node dist/index.js",
     "test": "jest",
@@ -63,6 +63,8 @@
     "typescript": "^4.0.2"
   },
   "dependencies": {
+    "@mikro-orm/core": "^4.0.3",
+    "@mikro-orm/postgresql": "^4.0.3",
     "amqplib": "^0.6.0",
     "assert": "^2.0.0",
     "bcryptjs": "^2.4.3",
@@ -82,7 +84,8 @@
     "spirit-bootstrap": "^1.0.0",
     "spt-rabbit-helpers": "^1.0.6",
     "tsyringe": "^4.3.0",
-    "typeorm": "^0.2.25"
+    "typeorm": "^0.2.25",
+    "uuid": "^8.3.0"
   },
   "config": {
     "commitizen": {

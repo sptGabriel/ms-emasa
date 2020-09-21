@@ -11,12 +11,12 @@ export class Typeorm implements DataBase {
   private connection: Connection;
   private runMigrations = async () => {
     if (!this.connection) return;
-    this.connection.runMigrations();
+    await this.connection.runMigrations();
   };
   private connect = async () => {
     try {
-      if (config) Promise.reject('Please set configurations');
-      return (this.connection = await createConnection(config));
+      if (!config) Promise.reject('Please set configurations');
+      this.connection = await createConnection(config);
     } catch (error) {
       if (error instanceof Error) Promise.reject(error);
     }
@@ -26,7 +26,9 @@ export class Typeorm implements DataBase {
       await this.connect();
       await this.runMigrations();
       container.register(Connection, { useValue: this.connection });
-    } catch {}
+    } catch (error) {
+      if (error instanceof Error) Promise.reject(error);
+    }
   };
   public close() {
     if (!this.connection) throw new Error('Dont exists connection');

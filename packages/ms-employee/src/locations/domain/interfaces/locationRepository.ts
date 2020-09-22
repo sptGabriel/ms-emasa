@@ -1,5 +1,4 @@
-import { BaseRepository } from '../../../core/base/BaseRepository';
+import { BaseRepository } from '../../../shared/domain/BaseRepository';
 import { Location } from './location.contract';
 
-export interface LocationRepository<Location>
-  extends BaseRepository<Location> {}
+export interface LocationRepository<Location> {}

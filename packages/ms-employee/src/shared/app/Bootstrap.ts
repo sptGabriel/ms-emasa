@@ -1,6 +1,8 @@
 import { ExpressServer, WebServer } from './WebServer';
 import { RabbitMQ } from './RabbitMQ';
 import options from '../../Mikro-orm.config';
+import { MikroClient, ORM } from './OrmClient';
+import { container, inject } from 'tsyringe';
 
 export interface BootStrapContainer {
   server: WebServer;
@@ -15,7 +17,7 @@ export class BootstrapApplication {
     this.rabbitMqServer = new RabbitMQ();
   }
   public start = async () => {
-    await this.start();
     await this.rabbitMqServer.start();
+    await this.server.start();
   };
 }

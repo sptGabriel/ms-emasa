@@ -7,8 +7,13 @@ import {
 import config from 'Mikro-orm.config';
 import { singleton } from 'tsyringe';
 
+export interface ORM {
+  start(): void;
+  getConnection(): MikroORM<IDatabaseDriver<Connection>>;
+}
+
 @singleton()
-export class MikroClient {
+export class MikroClient implements ORM {
   private mikroORMConnection: MikroORM<IDatabaseDriver<Connection>>;
   private options: Options;
   constructor(config: Options) {

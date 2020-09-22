@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, EntityRepositoryType, Property } from '@mikro-orm/core';
 import { BaseEntity } from '../../shared/domain/Base.entity';
 import { Location } from './interfaces/location.contract';
 import { LocationRepositoryImp } from '../infrastucture/location.repository';
@@ -11,4 +11,6 @@ export class LocationEntity extends BaseEntity implements Location {
   postal_code: string;
   @Property()
   number: number;
+
+  [EntityRepositoryType]?: LocationRepositoryImp;
 }

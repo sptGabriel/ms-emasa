@@ -1,5 +1,5 @@
 import { Entity, EntityRepositoryType, Property } from '@mikro-orm/core';
-import { BaseEntity } from '../../shared/domain/Base.entity';
+import { BaseEntity } from '../../shared/core/base.entity';
 import { Location } from './interfaces/location.contract';
 import { LocationRepositoryImp } from '../infrastucture/location.repository';
 

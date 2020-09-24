@@ -1,7 +1,8 @@
-import { Property } from '@mikro-orm/core';
-import { BaseEntity } from '../../shared/domain/Base.entity';
+import { Entity, EntityRepositoryType, Property } from '@mikro-orm/core';
+import { DepartamentRepositoryImp } from 'departaments/infrastucture/departament.repository';
+import { BaseEntity } from '../../shared/core/base.entity';
 import { Departament } from './interfaces/departament.contract';
-
+@Entity({ customRepository: () => DepartamentRepositoryImp })
 export class DepartamentEntity extends BaseEntity implements Departament {
   @Property()
   departament_name: string;
@@ -9,4 +10,6 @@ export class DepartamentEntity extends BaseEntity implements Departament {
   manager_id: string;
   @Property()
   location_id: string;
+
+  [EntityRepositoryType]?: DepartamentRepositoryImp;
 }

@@ -1,16 +1,14 @@
-import { Entity, EntityRepositoryType, Property } from '@mikro-orm/core';
-import { BaseEntity } from '../../shared/core/base.entity';
-import { Location } from './interfaces/location.contract';
-import { LocationRepositoryImp } from '../infrastucture/location.repository';
-
-@Entity({ customRepository: () => LocationRepositoryImp })
-export class LocationEntity extends BaseEntity implements Location {
-  @Property()
-  stret_address: string;
-  @Property()
+import { AggregateRoot } from 'shared/core/domain/aggregate-root';
+interface ILocation {
+  street_address: string;
   postal_code: string;
-  @Property()
-  number: number;
+}
+export class Location extends AggregateRoot implements ILocation {
+  get address(): string {
+    return this.street_address;
+  }
 
-  [EntityRepositoryType]?: LocationRepositoryImp;
+  get postalCode(): string {
+    return this.postal_code;
+  }
 }

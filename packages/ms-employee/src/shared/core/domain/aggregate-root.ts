@@ -1,24 +1,20 @@
-import { Entity } from './entity';
+import { Entity, Identifier } from './entity';
 import { DomainEvents } from './events/domain-event';
 import { IDomainEvent } from './events/domainEvent-contract';
-import { UniqueEntityID } from './unique-entityID';
 import pino from 'pino';
-
+import { JSONObject } from 'tiny-types';
 const logger = pino({ level: 'error' });
-export abstract class AggregateRoot<T> extends Entity<T> {
+export abstract class AggregateRoot<TId = Identifier> extends Entity<TId> {
+  _version: number = 0;
+  readonly fetchVersion: number;
   private _domainEvents: IDomainEvent[] = [];
-
-  get id(): UniqueEntityID {
-    return this._id;
-  }
-
   get domainEvents(): IDomainEvent[] {
     return this._domainEvents;
   }
 
-  protected addDomainEvent(domainEvent: IDomainEvent): void {
+  protected when(domainEvent: IDomainEvent): void {
     // Add the domain event to this aggregate's list of domain events
-    this._domainEvents.push(domainEvent);
+    this.addEvent(domainEvent);
     // Add this aggregate instance to the domain event's list of aggregates who's
     // events it eventually needs to dispatch.
     DomainEvents.markAggregateForDispatch(this);
@@ -40,5 +36,14 @@ export abstract class AggregateRoot<T> extends Entity<T> {
       '==>',
       domainEventClass.constructor.name,
     );
+  }
+
+  private addEvent(event: IDomainEvent): void {
+    this._domainEvents.push(event);
+    this._version++;
+  }
+  toJSON(): JSONObject {
+    const { _version, ...data } = super.toJSON() as JSONObject;
+    return data;
   }
 }

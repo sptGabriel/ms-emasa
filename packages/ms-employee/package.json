@@ -84,6 +84,7 @@
     "shallow-equal-object": "^1.1.1",
     "spirit-bootstrap": "^1.0.0",
     "spt-rabbit-helpers": "^1.0.6",
+    "tiny-types": "^1.15.0",
     "tsyringe": "^4.3.0",
     "typeorm": "^0.2.25",
     "uuid": "^8.3.0"

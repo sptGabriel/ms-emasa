@@ -1,10 +1,10 @@
-import { Entity, Identifier } from './entity';
+import { Entity } from './entity';
 import { DomainEvents } from './events/domain-event';
 import { IDomainEvent } from './events/domainEvent-contract';
 import pino from 'pino';
 import { JSONObject } from 'tiny-types';
 const logger = pino({ level: 'error' });
-export abstract class AggregateRoot<TId = Identifier> extends Entity<TId> {
+export abstract class AggregateRoot<T> extends Entity<T> {
   _version: number = 0;
   readonly fetchVersion: number;
   private _domainEvents: IDomainEvent[] = [];
@@ -41,9 +41,5 @@ export abstract class AggregateRoot<TId = Identifier> extends Entity<TId> {
   private addEvent(event: IDomainEvent): void {
     this._domainEvents.push(event);
     this._version++;
-  }
-  toJSON(): JSONObject {
-    const { _version, ...data } = super.toJSON() as JSONObject;
-    return data;
   }
 }

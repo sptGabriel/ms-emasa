@@ -1,28 +1,18 @@
 import { ensure } from 'tiny-types/lib/ensure';
 import { isDefined, Predicate, TinyType } from 'tiny-types';
 import { uuid } from 'uuidv4';
-export interface EntityProperties<TId = Identifier> {
-  id: TId;
-}
-export abstract class Identifier extends TinyType {
-  constructor(readonly value: string) {
-    super();
-    this.value = value || uuid();
-    ensure(this.constructor.name, value, isNotEmpty());
-  }
+import { UniqueEntityID } from './unique-id';
 
-  toString(): string {
-    return this.value;
+export abstract class Entity<T> {
+  protected readonly _id: UniqueEntityID;
+
+  public readonly props: T;
+
+  constructor(props: T, id?: UniqueEntityID) {
+    this._id = id || new UniqueEntityID();
+    this.props = props;
   }
-}
-export abstract class Entity<TId = Identifier>
-  extends TinyType
-  implements EntityProperties<TId> {
-  constructor(readonly id: TId) {
-    super();
-    ensure(this.constructor.name, id, isDefined());
-  }
-  equals(object: Entity<TId>): boolean {
+  equals(object: Entity<T>): boolean {
     if (object == null) {
       return false;
     }
@@ -33,7 +23,7 @@ export abstract class Entity<TId = Identifier>
       return false;
     }
 
-    return this.id.equals(object.id);
+    return this._id.equals(object._id);
   }
 }
 function isEntity(v?: object): boolean {

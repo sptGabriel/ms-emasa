@@ -15,7 +15,9 @@ module.exports = {
       'module-resolver',
       {
         alias: {
-          '@entities': './src/models',
+          '@modules': './src/modules',
+          '@infra': './src/infra',
+          '@config': './src/config',
         },
       },
     ],

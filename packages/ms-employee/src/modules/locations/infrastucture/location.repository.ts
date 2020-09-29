@@ -1,8 +1,18 @@
-import { LocationEntity } from '../domain/location.entity';
-import { LocationRepository } from '../domain/interfaces/locationRepository';
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { MikroClient } from 'shared/app/OrmClient';
-import { inject } from 'tsyringe';
-export class LocationRepositoryImp
-  extends EntityRepository<LocationEntity>
-  implements LocationRepository<LocationEntity> {}
+import {
+  IDatabaseDriver,
+  RequestContext,
+  Connection,
+  EntityManager,
+  EntityRepository,
+} from '@mikro-orm/core';
+
+import { injectable } from 'tsyringe';
+
+//   implements LocationRepository<LocationEntity> {}
+export class LocationRepository {
+  private EntityManager: EntityManager;
+  protected readonly repository: EntityRepository<WriteModelType>;
+  constructor(context: RequestContext) {
+    this.EntityManager = context.em;
+  }
+}

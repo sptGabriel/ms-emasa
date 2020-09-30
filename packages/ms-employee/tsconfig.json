@@ -17,9 +17,9 @@
     "noImplicitAny": true,
     "typeRoots": ["node_modules/@types", "@types"],
     "paths": {
-      "@modules/*": ["./src/modules/*"],
-      "@infra/*": ["./src/infra/*"],
-      "@config/*": ["./src/config/*"]
+      "@modules/*": ["modules/*"],
+      "@infra/*": ["infra/*"],
+      "@config/*": ["config/*"]
     }
   },
   "include": ["src", "__tests__"],

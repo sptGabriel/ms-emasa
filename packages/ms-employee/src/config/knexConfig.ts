@@ -26,6 +26,7 @@ const config: KnexConfig = {
       directory: path.resolve(__dirname, 'src', 'infra', 'Knex', 'migrations'),
     },
     timezone: 'UTC',
+    useNullAsDefault: true,
   },
 };
 

@@ -1,6 +1,6 @@
-import { Result } from 'infra/core/eitherHandler';
+import { Result } from '../../../shared/core/utils/result';
 import { AggregateRoot } from 'shared/core/domain/aggregate-root';
-import { UniqueEntityID } from 'shared/core/domain/unique-entityID';
+import { UniqueEntityID } from '../../../shared/core/domain/unique-id';
 import { Guard } from 'shared/core/utils/guard';
 import { LocationCreatedEvent } from './events/locationCreated-Event';
 export interface ILocationProps {
@@ -38,7 +38,7 @@ export class Location extends AggregateRoot<ILocationProps> {
     const idWasProvided = !!id;
 
     if (!idWasProvided) {
-      location.addDomainEvent(new LocationCreatedEvent(location));
+      location.when(new LocationCreatedEvent(location));
     }
 
     return Result.ok<Location>(location);

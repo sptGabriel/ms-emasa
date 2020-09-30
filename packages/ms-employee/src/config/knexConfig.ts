@@ -1,4 +1,5 @@
 import knex from 'knex';
+import path from 'path';
 
 const rootDir =
   process.env.NODE_ENV === 'development' ? 'development' : 'development';

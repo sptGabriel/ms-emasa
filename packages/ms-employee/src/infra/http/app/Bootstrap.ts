@@ -1,6 +1,5 @@
 import { ExpressServer, WebServer } from './WebServer';
 import { RabbitMQ } from './RabbitMQ';
-import options from '../../Mikro-orm.config';
 import { MikroClient, ORM } from './OrmClient';
 import { container, inject } from 'tsyringe';
 

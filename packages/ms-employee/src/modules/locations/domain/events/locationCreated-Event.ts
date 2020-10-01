@@ -1,5 +1,5 @@
 import { UniqueEntityID } from '../../../../shared/core/domain/unique-id';
-import { Location } from '../location.entity';
+import { Location } from '../location';
 export class LocationCreatedEvent {
   public dateTimeOccurred: Date;
   public location: Location;

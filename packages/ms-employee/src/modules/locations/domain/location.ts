@@ -3,37 +3,37 @@ import { AggregateRoot } from 'shared/core/domain/aggregate-root';
 import { UniqueEntityID } from '../../../shared/core/domain/unique-id';
 import { Guard } from 'shared/core/utils/guard';
 import { LocationCreatedEvent } from './events/locationCreated-Event';
+import { CepCode } from './locationPostalCode';
 export interface ILocationProps {
   stret_address: string;
-  postal_code: string;
+  cep_code: CepCode;
 }
-export class Location extends AggregateRoot<ILocationProps> {
-  get stretAddress(): string {
+export class LocationSeats extends AggregateRoot<ILocationProps> {
+  get StretAddress(): string {
     return this.props.stret_address;
   }
-  get postalCode(): string {
-    return this.props.postal_code;
+  get CepCode(): CepCode {
+    return this.props.cep_code;
   }
-
   private constructor(props: ILocationProps, id?: UniqueEntityID) {
     super(props, id);
   }
   public static create(
     props: ILocationProps,
     id?: UniqueEntityID,
-  ): Result<Location> {
+  ): Result<LocationSeats> {
     const guardedProps = [
-      { argument: props.postal_code, argumentName: 'postal_code' },
+      { argument: props.cep_code, argumentName: 'cep_code' },
       { argument: props.stret_address, argumentName: 'stret_address' },
     ];
 
     const guardResult = Guard.againstNullOrUndefinedBulk(guardedProps);
 
     if (!guardResult.succeeded) {
-      return Result.fail<Location>(guardResult.message);
+      return Result.fail<LocationSeats>(guardResult.message);
     }
 
-    const location = new Location(props, id);
+    const location = new LocationSeats(props, id);
 
     const idWasProvided = !!id;
 
@@ -41,6 +41,6 @@ export class Location extends AggregateRoot<ILocationProps> {
       location.when(new LocationCreatedEvent(location));
     }
 
-    return Result.ok<Location>(location);
+    return Result.ok<LocationSeats>(location);
   }
 }

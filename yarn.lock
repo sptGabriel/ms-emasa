@@ -6247,6 +6247,11 @@ node-environment-flags@^1.0.5:
     object.getownpropertydescriptors "^2.0.3"
     semver "^5.7.0"
 
+node-fetch@^2.1.2:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
+
 node-int64@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
@@ -6273,6 +6278,13 @@ node-releases@^1.1.61:
   version "1.1.61"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.61.tgz#707b0fca9ce4e11783612ba4a2fcba09047af16e"
   integrity sha512-DD5vebQLg8jLCOzwupn954fbIiZht05DAZs0k2u8NStSe6h9XdsuIQL8hSRKYiU8WUQRznmSDrKGbv3ObOmC7g==
+
+node-viacep@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/node-viacep/-/node-viacep-1.1.0.tgz#dcdaf6722804c45bfd25ca3377b38225ab3992d5"
+  integrity sha512-3wWjsEYwBeOqB8g90EeBwDBUaqe7l1dINMOOyxT7GLWUTZ/ubMQKmgCP2jwKys/q/IS04DZE+qVVhVLW7aH3YA==
+  dependencies:
+    node-fetch "^2.1.2"
 
 nodemon@^2.0.4:
   version "2.0.4"

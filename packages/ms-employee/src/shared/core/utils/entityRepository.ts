@@ -1,7 +1,8 @@
 import { LocationModel } from '@modules/locations/infrastucture/location.model';
-import { Location } from '@modules/locations/domain/location.entity';
-import { Model } from 'objection';
+import { Location } from '@modules/locations/domain/location';
+import { Model, ModelClass } from 'objection';
 import Knex from 'knex';
+import IMapper from '../infra/mapper';
 
 export interface IRead<T> {
   find(id: string): Promise<T>;
@@ -20,12 +21,19 @@ const _validateIsModel = (model: Model): Boolean => {
   if (parentClass.name === 'Model') return true;
   return false;
 };
-export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
+export abstract class BaseRepository<T, M extends Model>
+  implements IWrite<T>, IRead<T> {
   private knex: Knex;
-  private model: Model;
-  constructor(knex: Knex, model: Model) {
+  private model: ModelClass<M>;
+  private mapper: IMapper<T>;
+  constructor(knex: Knex, model: ModelClass<M>, mapper: IMapper<T>) {
     this.knex = knex;
     this.model = model;
+    this.mapper = mapper;
+  }
+  public get Mapper() {
+    if (!this.mapper) throw new Error('Mapper not implemented.');
+    return this.mapper;
   }
   public get Model() {
     if (!this.model) throw new Error('Model not implemented.');
@@ -37,24 +45,26 @@ export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
     return this.knex;
   }
   public findAll = async (): Promise<T[]> => {
-    const rawValues = await this.model.$query();
-    throw new Error('Method not implemented.');
+    const rawValues = await this.model.query();
+    const rawtoDomain = rawValues.map(raw => {
+      return this.mapper.toDomain(raw);
+    });
+    return rawtoDomain;
   };
-
   public find = async (id: string): Promise<T> => {
-    const rawFind = await this.model.$query().findById(id);
-    throw new Error('Method not implemented.');
+    const rawValue = await this.model.query().findById(id);
+    return this.mapper.toDomain(rawValue);
   };
   public create = async (item: T): Promise<T> => {
-    const rawCreate = await this.model.$query().insert(item);
-    throw new Error('Method not implemented.');
+    const rawValue = await this.model.query().insert(item);
+    return this.mapper.toDomain(rawValue);
   };
   public update = async (id: string, item: T): Promise<T> => {
-    const rawUpdate = await this.model.$query().patchAndFetchById(id, item);
-    throw new Error('Method not implemented.');
+    const rawValue = await this.model.query().patchAndFetchById(id, item);
+    return this.mapper.toDomain(rawValue);
   };
   public delete = async (id: string): Promise<T> => {
-    const rawDelete = await this.model.$query().deleteById(id);
-    throw new Error('Method not implemented.');
+    const rawValue = await this.model.query().deleteById(id);
+    return this.mapper.toDomain(rawValue);
   };
 }

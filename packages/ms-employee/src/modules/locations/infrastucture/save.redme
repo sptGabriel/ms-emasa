@@ -4,7 +4,8 @@ import { Model } from 'objection';
 import Knex from 'knex';
 
 export interface IRead<T> {
-  find(id: string): Promise<T>;
+  find(item: T): Promise<T>;
+  findOne(id: string): Promise<T>;
   findAll(): Promise<T[]>;
 }
 export interface IWrite<T> {
@@ -22,8 +23,8 @@ const _validateIsModel = (model: Model): Boolean => {
 };
 export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
   private knex: Knex;
-  private model: Model;
-  constructor(knex: Knex, model: Model) {
+  private model: any;
+  constructor(knex: Knex, model: any) {
     this.knex = knex;
     this.model = model;
   }
@@ -36,25 +37,24 @@ export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
       throw new Error('Knex connection instance not implemented.');
     return this.knex;
   }
-  public findAll = async (): Promise<T[]> => {
-    const rawValues = await this.model.$query();
+  find(item: T): Promise<T> {
     throw new Error('Method not implemented.');
+  }
+  public findAll = async (): Promise<T[]> => {
+    return await this.model.query();
   };
 
-  public find = async (id: string): Promise<T> => {
-    const rawFind = await this.model.$query().findById(id);
-    throw new Error('Method not implemented.');
+  public findOne = async (id: string): Promise<T> => {
+    return await this.model.query().findById(id);
   };
   public create = async (item: T): Promise<T> => {
-    const rawCreate = await this.model.$query().insert(item);
-    throw new Error('Method not implemented.');
+    return await this.model.query().insert(item);
   };
   public update = async (id: string, item: T): Promise<T> => {
-    const rawUpdate = await this.model.$query().patchAndFetchById(id, item);
-    throw new Error('Method not implemented.');
+    const result = await this.model.query().patchAndFetchById(id, item);
+    return result;
   };
   public delete = async (id: string): Promise<T> => {
-    const rawDelete = await this.model.$query().deleteById(id);
-    throw new Error('Method not implemented.');
+    return await this.model.query().deleteById(id);
   };
 }

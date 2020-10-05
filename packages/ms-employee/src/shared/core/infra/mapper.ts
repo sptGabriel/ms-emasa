@@ -1,6 +1,6 @@
-import { Result } from '../utils/result';
+import { Either } from '../utils/result';
 
-export default interface IMapperr<T> {
-  toPersistence(t: any): Result<T>;
-  toDomain(raw: any): Result<T>;
+export interface IMapper<T> {
+  toPersistence(t: any): T;
+  toDomain(raw: any): T;
 }

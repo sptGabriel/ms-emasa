@@ -11,8 +11,7 @@
     "test": "jest",
     "lint": "eslint --fix",
     "lint2": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ./ormconfig.ts",
-    "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -n"
+    "knex": "./node_modules/.bin/knex --knexfile ./knexfile.ts"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.5",
@@ -90,6 +89,7 @@
     "spirit-bootstrap": "^1.0.0",
     "spt-rabbit-helpers": "^1.0.6",
     "tiny-types": "^1.15.0",
+    "ts-node": "^9.0.0",
     "tsyringe": "^4.3.0",
     "typeorm": "^0.2.25",
     "uuid": "^8.3.0"

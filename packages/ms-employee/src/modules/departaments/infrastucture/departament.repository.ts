@@ -6,32 +6,64 @@ import { IDepartamentRepository } from '../infrastucture/contracts/departamentRe
 import Knex from 'knex';
 import { IMapper } from 'shared/core/infra/mapper';
 import { raw } from 'body-parser';
+
 export class DepartamentRepository
   extends BaseRepository<Departament>
   implements IDepartamentRepository<Departament> {
-  public findById = async (id: string): Promise<Departament> => {
-    const rawDepartament = this.Query.where(id);
-    const domainDepartament: Departament = rawDepartament;
+  public find = async (id: string): Promise<Departament> => {
+    const rawDepartament = await this.Query.where({ id });
+    const departamentDomain = await this.Mapper.toDomain(rawDepartament);
+    return departamentDomain;
   };
   public findAll = async (): Promise<Departament[]> => {
-    throw new Error('Method not implemented.');
+    const rawResults = await this.Query.where('deleted_at', null);
+    const toDomainResults = [];
+    for (let raw of rawResults) {
+      const rawValue = await this.Mapper.toDomain(raw);
+      toDomainResults.push(rawValue);
+    }
+    return toDomainResults;
   };
-  public create = async (item: Object): Promise<Departament> => {
-    throw new Error('Method not implemented.');
+  public create = async (item: any): Promise<Departament> => {
+    const promisify = (fn: any) =>
+      new Promise((resolve, reject) => fn(resolve));
+    const trx: Knex.Transaction = <Knex.Transaction>(
+      await promisify(this.Knex.transaction)
+    );
+    try {
+      const rawExists = await this.findByName(item.departament_name);
+      if (rawExists) {
+      }
+      const rawResult = await this.Query.insert(item);
+      const toDomainResult = await this.Mapper.toDomain(rawResult);
+      return toDomainResult;
+    } catch {}
   };
-  public update = async (
-    id: string,
-    item: Departament,
-  ): Promise<Departament> => {
-    throw new Error('Method not implemented.');
+  public update = async (id: string, item: any): Promise<Departament> => {
+    const { departament_name, manager_id } = item;
+    const rawResult = await this.Query.update({
+      departament_name,
+      manager_id,
+    }).where({ id });
+    const rawToDomain = await this.Mapper.toDomain(rawResult);
+    return rawToDomain;
   };
   public delete = async (id: string): Promise<Departament> => {
-    throw new Error('Method not implemented.');
+    const rawResult = await this.Query.where({ id }).update(
+      'deleted_at',
+      new Date(),
+    );
+    const rawToDomain = await this.Mapper.toDomain(rawResult);
+    return rawToDomain;
   };
-  public findByName = async (name: string): Promise<Departament> => {
-    throw new Error('Method not implemented.');
+  public findByName = async (
+    departament_name: string,
+  ): Promise<Departament> => {
+    const rawDepartament = await this.Query.where({ departament_name }).first();
+    const departamentDomain = await this.Mapper.toDomain(rawDepartament);
+    return departamentDomain;
   };
-  constructor(db: Knex, mapper: IMapper<Departament>, table: string) {
+  constructor(db: Knex, mapper: IMapper<Departament>, private table: string) {
     super(db, mapper, table);
   }
 }

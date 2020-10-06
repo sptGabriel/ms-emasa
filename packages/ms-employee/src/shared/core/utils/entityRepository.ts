@@ -7,7 +7,7 @@ export interface IRead<T> {
 }
 export interface IWrite<T> {
   create(item: Object): Promise<T>;
-  update(id: string, item: T): Promise<T>;
+  update(id: string, item: any): Promise<T>;
   delete(id: string): Promise<T>;
 }
 export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {

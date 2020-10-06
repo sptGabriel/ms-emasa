@@ -25,41 +25,46 @@ export class DepartamentRepository
     return toDomainResults;
   };
   public create = async (item: any): Promise<Departament> => {
-    const promisify = (fn: any) =>
-      new Promise((resolve, reject) => fn(resolve));
+    const promisify = (fn: any) => new Promise(resolve => fn(resolve));
     const trx: Knex.Transaction = <Knex.Transaction>(
       await promisify(this.Knex.transaction)
     );
     try {
       const rawExists = await this.findByName(item.departament_name);
-      if (rawExists) {
-      }
-      const rawResult = await this.Query.insert(item);
+      if (rawExists) Promise.reject(new Error('Data already exists'));
+      const rawResult = await trx(this.table).insert(item).returning('*');
       const toDomainResult = await this.Mapper.toDomain(rawResult);
+      await trx.commit();
       return toDomainResult;
-    } catch {}
+    } catch (error) {
+      trx.rollback();
+      return Promise.reject('Error adding departament Name: ' + error);
+    }
   };
   public update = async (id: string, item: any): Promise<Departament> => {
     const { departament_name, manager_id } = item;
     const rawResult = await this.Query.update({
       departament_name,
       manager_id,
-    }).where({ id });
+    })
+      .where({ id })
+      .returning('*');
     const rawToDomain = await this.Mapper.toDomain(rawResult);
     return rawToDomain;
   };
   public delete = async (id: string): Promise<Departament> => {
-    const rawResult = await this.Query.where({ id }).update(
-      'deleted_at',
-      new Date(),
-    );
+    const rawResult = await this.Query.where({ id })
+      .update('deleted_at', new Date())
+      .returning('*');
     const rawToDomain = await this.Mapper.toDomain(rawResult);
     return rawToDomain;
   };
   public findByName = async (
     departament_name: string,
   ): Promise<Departament> => {
-    const rawDepartament = await this.Query.where({ departament_name }).first();
+    const rawDepartament = await this.Query.where({ departament_name })
+      .first()
+      .returning('*');
     const departamentDomain = await this.Mapper.toDomain(rawDepartament);
     return departamentDomain;
   };

@@ -1,19 +1,20 @@
 import knex from 'knex';
 import path from 'path';
-require('dotenv').config();
-require('ts-node/register');
+import dotenv from 'dotenv';
+dotenv.config();
 interface KnexConfig {
   [key: string]: object;
 }
 const extension =
-  process.env.NODE_CONFIG_ENV === 'production' ||
+  process.env.NODE_ENV === 'production' ||
   process.env.NODE_CONFIG_ENV === 'staging'
     ? 'js'
     : 'ts';
-const database = {
+const database: KnexConfig = {
   development: {
     client: 'postgresql',
     connection: {
+      port: process.env.DB_PORT,
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASS,
@@ -25,21 +26,23 @@ const database = {
     },
     migrations: {
       tableName: 'knex_migrations',
+      directory: path.resolve(__dirname, 'src', 'infra', 'knex', 'migrations'),
       loadExtensions: [extension],
       extension: extension,
-      directory: path.resolve(__dirname, 'src', 'infra', 'knex', 'migrations'),
     },
     seeds: {
       loadExtensions: ['.ts'],
     },
     timezone: 'UTC',
     useNullAsDefault: true,
+    onUpdateTrigger: (table: string) => `
+    CREATE TRIGGER ${table}_updated_at
+    BEFORE UPDATE ON ${table}
+    FOR EACH ROW
+    EXECUTE PROCEDURE on_update_timestamp();
+    `,
   },
-  onUpdateTrigger: table => `
-  CREATE TRIGGER ${table}_updated_at
-  BEFORE UPDATE ON ${table}
-  FOR EACH ROW
-  EXECUTE PROCEDURE on_update_timestamp();
-  `,
-} as knex.Config;
-module.exports = database;
+};
+
+const knexConfig = database['development'] as knex.Config;
+module.exports = knexConfig;

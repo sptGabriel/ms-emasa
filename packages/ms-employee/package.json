@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "commit": "git-cz",
-    "start:dev": "ts-node-dev  --respawn --transpile-only --ignore-watch node_modules -r tsconfig-paths/register src/shared/app/index.ts",
+    "start:dev": "ts-node-dev  --respawn --transpile-only --ignore-watch node_modules -r tsconfig-paths/register ./src/infra/http/app/index.ts",
     "start:debug": "node start --debug --watch",
     "start:prod": "node --harmony-top-level-await --experimental-modules --es-module-specifier-resolution=node dist/index.js",
     "test": "jest",

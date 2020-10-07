@@ -26,7 +26,7 @@ const database: KnexConfig = {
     },
     migrations: {
       tableName: 'knex_migrations',
-      directory: path.resolve(__dirname, 'src', 'infra', 'knex', 'migrations'),
+      directory: path.resolve(__dirname, '../infra/knex/migrations'),
       loadExtensions: [extension],
       extension: extension,
     },

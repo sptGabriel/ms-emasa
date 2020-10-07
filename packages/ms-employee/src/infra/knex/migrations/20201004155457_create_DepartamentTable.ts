@@ -1,5 +1,5 @@
 import Knex from 'knex';
-const { onUpdateTrigger } = require('../../../../knexfile');
+const { onUpdateTrigger } = require('../../../config/knexfile');
 export async function up(knex: Knex): Promise<void> {
   return knex.schema
     .createTable('departaments', table => {

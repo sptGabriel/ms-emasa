@@ -1,7 +1,7 @@
 import { ExpressServer, WebServer } from './WebServer';
-import { RabbitMQ } from './RabbitMQ';
-import { container, inject } from 'tsyringe';
+import { container } from 'tsyringe';
 import { KnexInstance } from '@infra/knex/knexConnection';
+import * as knexConfig from '@config/knexfile';
 
 export interface BootStrapContainer {
   server: WebServer;
@@ -15,7 +15,7 @@ export class BootstrapApplication {
     this.knex = container.resolve(KnexInstance);
   }
   public start = async () => {
-    await this.knex.runMigrations();
+    await this.knex.start(knexConfig);
     await this.server.start();
   };
 }

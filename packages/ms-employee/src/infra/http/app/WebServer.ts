@@ -3,7 +3,8 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { ErrorMiddleware } from './middlewares/error.middleware';
-
+import { KnexInstance } from '../../knex/knexConnection';
+import { container } from 'tsyringe';
 export interface WebServer {
   start(): void;
   getServer(): void;

@@ -1,9 +1,16 @@
 import Knex from 'knex';
 import { singleton } from 'tsyringe';
-
+import * as knexConfig from '@config/knexfile';
 @singleton()
 export class KnexInstance {
   private knex: Knex;
+  private config: Knex.Config;
+  constructor() {
+    this.config = knexConfig;
+  }
+  public get KnexConfig() {
+    return this.config;
+  }
   public get Knex() {
     return this.knex;
   }
@@ -23,9 +30,9 @@ export class KnexInstance {
     await this.knex.migrate.latest({ loadExtensions: ['.ts'] });
     console.log('Migration finished...');
   };
-  public start = async (config: Knex.Config) => {
+  public start = async () => {
     if (this.knex instanceof Knex) return;
-    this.knex = await Knex(config);
+    this.knex = await Knex(this.KnexConfig);
     await this.runMigrations();
     await this.assertDatabaseConnection();
   };

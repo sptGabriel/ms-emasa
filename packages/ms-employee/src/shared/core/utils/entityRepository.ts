@@ -11,11 +11,13 @@ export interface IWrite<T> {
   delete(id: string): Promise<T>;
 }
 export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
-  private knex: Knex;
-  private mapper: IMapper<T>;
-  constructor(knex: Knex, mapper: IMapper<T>) {
-    this.knex = knex;
+  protected db: Knex;
+  protected tableName: string;
+  protected mapper: IMapper<T>;
+  constructor(knex: Knex, mapper: IMapper<T>, table: string) {
+    this.db = knex;
     this.mapper = mapper;
+    this.tableName = table;
   }
   abstract find(id: string): Promise<T>;
   abstract findAll(): Promise<T[]>;
@@ -26,9 +28,8 @@ export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
     if (!this.mapper) throw new Error('Mapper not implemented.');
     return this.mapper;
   }
-  public get Knex() {
-    if (!this.knex)
-      throw new Error('Knex connection instance not implemented.');
-    return this.knex;
+  public get Connection() {
+    if (!this.db) throw new Error('Knex connection instance not implemented.');
+    return this.db;
   }
 }

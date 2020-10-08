@@ -10,12 +10,12 @@ export interface BootStrapContainer {
 export class BootstrapApplication {
   private server: WebServer;
   private knex: KnexInstance;
-  constructor() {
-    this.server = new ExpressServer();
-    this.knex = container.resolve(KnexInstance);
+  constructor(server: WebServer, knex: KnexInstance) {
+    this.server = server;
+    this.knex = knex;
   }
   public start = async () => {
-    await this.knex.start(knexConfig);
+    await this.knex.start();
     await this.server.start();
   };
 }

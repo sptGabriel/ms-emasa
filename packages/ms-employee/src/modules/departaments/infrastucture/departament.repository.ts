@@ -9,18 +9,28 @@ import { IMapper } from 'shared/core/infra/mapper';
 export class DepartamentRepository
   extends BaseRepository<Departament>
   implements IDepartamentRepository<Departament> {
-  private query: Knex.QueryBuilder;
-  constructor(db: Knex, mapper: IMapper<Departament>) {
-    super(db, mapper);
-    this.query = this.Knex<IDepartamentProps>('departaments');
+  constructor(
+    connection: Knex,
+    mapper: IMapper<Departament>,
+    table: string = 'departaments',
+  ) {
+    super(connection, mapper, table);
   }
   public find = async (id: string): Promise<Departament> => {
-    const rawDepartament = await this.query.where({ id });
+    const rawDepartament = await this.db
+      .select('*')
+      .from<IDepartamentProps>(this.tableName)
+      .where('id', id)
+      .returning('*');
     const departamentDomain = await this.Mapper.toDomain(rawDepartament);
     return departamentDomain;
   };
   public findAll = async (): Promise<Departament[]> => {
-    const rawResults = await this.query.where('deleted_at', null);
+    const rawResults = await this.db
+      .select('*')
+      .from<IDepartamentProps>(this.tableName)
+      .where('deleted_at', null)
+      .returning('*');
     const toDomainResults = [];
     for (let raw of rawResults) {
       const rawValue = await this.Mapper.toDomain(raw);
@@ -31,12 +41,15 @@ export class DepartamentRepository
   public create = async (item: any): Promise<Departament> => {
     const promisify = (fn: any) => new Promise(resolve => fn(resolve));
     const trx: Knex.Transaction = <Knex.Transaction>(
-      await promisify(this.Knex.transaction)
+      await promisify(this.db.transaction)
     );
     try {
       const rawExists = await this.findByName(item.departament_name);
       if (rawExists) Promise.reject(new Error('Data already exists'));
-      const rawResult = await trx('departaments').insert(item).returning('*');
+      const rawResult = await trx()
+        .insert(item)
+        .into<IDepartamentProps>('departaments')
+        .returning('*');
       const toDomainResult = await this.Mapper.toDomain(rawResult);
       await trx.commit();
       return toDomainResult;
@@ -47,7 +60,7 @@ export class DepartamentRepository
   };
   public update = async (id: string, item: any): Promise<Departament> => {
     const { departament_name, manager_id } = item;
-    const rawResult = await this.query
+    const rawResult = await this.db
       .update({
         departament_name,
         manager_id,
@@ -58,7 +71,7 @@ export class DepartamentRepository
     return rawToDomain;
   };
   public delete = async (id: string): Promise<Departament> => {
-    const rawResult = await this.query
+    const rawResult = await this.db
       .where({ id })
       .update('deleted_at', new Date())
       .returning('*');
@@ -67,11 +80,13 @@ export class DepartamentRepository
   };
   public findByName = async (
     departament_name: string,
-  ): Promise<Departament> => {
-    const rawDepartament = await this.query
+  ): Promise<Departament | undefined> => {
+    const rawDepartament = await this.db
+      .select('*')
+      .from<IDepartamentProps>(this.tableName)
       .where({ departament_name })
-      .first()
-      .returning('*');
+      .first();
+    if (!rawDepartament) return undefined;
     const departamentDomain = await this.Mapper.toDomain(rawDepartament);
     return departamentDomain;
   };

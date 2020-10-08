@@ -1,8 +1,8 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add @types/objection -D
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add @types/express-knex-transaction -D
 
 PATH: 
-  C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\spiriT\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\ProgramData\chocolatey\bin;C:\Program Files\nodejs;C:\Program Files (x86)\Yarn\bin;C:\Program Files\Git\cmd;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Users\spiriT\AppData\Local\Microsoft\WindowsApps;C:\Users\spiriT\AppData\Local\hyper\app-3.0.2\resources\bin;C:\Users\spiriT\AppData\Roaming\npm;C:\Users\spiriT\AppData\Local\Yarn\bin;C:\Users\spiriT\AppData\Local\Programs\Microsoft VS Code\bin
+  C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\chocolatey\bin;C:\Program Files\nodejs\;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\Git\cmd;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Users\spiriT\AppData\Local\Microsoft\WindowsApps;;C:\Users\spiriT\AppData\Local\hyper\app-3.0.2\resources\bin;C:\Users\spiriT\AppData\Roaming\npm;C:\Users\spiriT\AppData\Local\Yarn\bin;C:\Users\spiriT\AppData\Local\Programs\Microsoft VS Code\bin
 
 Yarn version: 
   1.22.5
@@ -14,7 +14,7 @@ Platform:
   win32 x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fobjection: Not found
+  Error: https://registry.yarnpkg.com/@types%2fexpress-knex-transaction: Not found
       at Request.params.callback [as _callback] (C:\Program Files (x86)\Yarn\lib\cli.js:66097:18)
       at Request.self.callback (C:\Program Files (x86)\Yarn\lib\cli.js:140749:22)
       at Request.emit (events.js:314:20)
@@ -34,14 +34,13 @@ npm manifest:
     "license": "MIT",
     "scripts": {
       "commit": "git-cz",
-      "start:dev": "ts-node-dev  --respawn --transpile-only --ignore-watch node_modules -r tsconfig-paths/register src/shared/app/index.ts",
+      "start:dev": "ts-node-dev  --respawn --transpile-only --ignore-watch node_modules -r tsconfig-paths/register ./src/infra/http/app/index.ts",
       "start:debug": "node start --debug --watch",
       "start:prod": "node --harmony-top-level-await --experimental-modules --es-module-specifier-resolution=node dist/index.js",
       "test": "jest",
       "lint": "eslint --fix",
       "lint2": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-      "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ./ormconfig.ts",
-      "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -n"
+      "knex": "./node_modules/.bin/knex --knexfile ./src/config/knexfile.ts"
     },
     "devDependencies": {
       "@babel/cli": "^7.11.5",
@@ -59,7 +58,9 @@ npm manifest:
       "@types/express": "^4.17.8",
       "@types/helmet": "^0.0.48",
       "@types/jest": "^26.0.13",
+      "@types/knex": "^0.16.1",
       "@types/node": "^14.6.4",
+      "@types/on-finished": "^2.3.1",
       "@types/pino": "^6.3.0",
       "@types/pino-http": "^5.0.5",
       "@types/supertest": "^2.0.10",
@@ -103,12 +104,15 @@ npm manifest:
       "dotenv": "^8.2.0",
       "envalid": "^6.0.2",
       "express": "^4.17.1",
+      "express-knex-transaction": "^1.1.0",
       "extendable-error": "^0.1.7",
       "glob": "^7.1.6",
       "helmet": "^4.1.0",
       "knex": "^0.21.6",
       "nabbitmq": "^1.0.0",
+      "node-viacep": "^1.1.0",
       "objection": "^2.2.3",
+      "on-finished": "^2.3.0",
       "pg": "^8.3.3",
       "pino": "^6.6.1",
       "pino-http": "^5.2.0",
@@ -117,6 +121,7 @@ npm manifest:
       "spirit-bootstrap": "^1.0.0",
       "spt-rabbit-helpers": "^1.0.6",
       "tiny-types": "^1.15.0",
+      "ts-node": "^9.0.0",
       "tsyringe": "^4.3.0",
       "typeorm": "^0.2.25",
       "uuid": "^8.3.0"
@@ -1756,6 +1761,13 @@ Lockfile:
     version "2.4.0"
     resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
     integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
+  
+  "@types/on-finished@^2.3.1":
+    version "2.3.1"
+    resolved "https://registry.yarnpkg.com/@types/on-finished/-/on-finished-2.3.1.tgz#4537f9f2b47b3ba0b92c14a4bcc0f755aeda3484"
+    integrity sha512-mzVYaYcFs5Jd2n/O6uYIRUsFRR1cHyZLRvkLCU0E7+G5WhY0qBDAR5fUCeZbvecYOSh9ikhlesyi2UfI8B9ckQ==
+    dependencies:
+      "@types/node" "*"
   
   "@types/parse-json@^4.0.0":
     version "4.0.0"
@@ -3914,6 +3926,13 @@ Lockfile:
       jest-matcher-utils "^26.4.2"
       jest-message-util "^26.3.0"
       jest-regex-util "^26.0.0"
+  
+  express-knex-transaction@^1.1.0:
+    version "1.1.0"
+    resolved "https://registry.yarnpkg.com/express-knex-transaction/-/express-knex-transaction-1.1.0.tgz#100548081fa985177e5d08e0900bc35c4f4a0d07"
+    integrity sha512-KwSFFdVT+T8O7XliasiROWnY/sfycv98lNTXyWcR4J5GLPbYlXnBC3FG1ncTUqXgQhaJ+Pd+bNr+Pv60wbRv7g==
+    dependencies:
+      on-finished "^2.3.0"
   
   express@^4.17.1:
     version "4.17.1"
@@ -6381,6 +6400,11 @@ Lockfile:
       object.getownpropertydescriptors "^2.0.3"
       semver "^5.7.0"
   
+  node-fetch@^2.1.2:
+    version "2.6.1"
+    resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+    integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
+  
   node-int64@^0.4.0:
     version "0.4.0"
     resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
@@ -6407,6 +6431,13 @@ Lockfile:
     version "1.1.61"
     resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.61.tgz#707b0fca9ce4e11783612ba4a2fcba09047af16e"
     integrity sha512-DD5vebQLg8jLCOzwupn954fbIiZht05DAZs0k2u8NStSe6h9XdsuIQL8hSRKYiU8WUQRznmSDrKGbv3ObOmC7g==
+  
+  node-viacep@^1.1.0:
+    version "1.1.0"
+    resolved "https://registry.yarnpkg.com/node-viacep/-/node-viacep-1.1.0.tgz#dcdaf6722804c45bfd25ca3377b38225ab3992d5"
+    integrity sha512-3wWjsEYwBeOqB8g90EeBwDBUaqe7l1dINMOOyxT7GLWUTZ/ubMQKmgCP2jwKys/q/IS04DZE+qVVhVLW7aH3YA==
+    dependencies:
+      node-fetch "^2.1.2"
   
   nodemon@^2.0.4:
     version "2.0.4"
@@ -6591,7 +6622,7 @@ Lockfile:
       ajv "^6.12.0"
       db-errors "^0.2.3"
   
-  on-finished@~2.3.0:
+  on-finished@^2.3.0, on-finished@~2.3.0:
     version "2.3.0"
     resolved "https://registry.yarnpkg.com/on-finished/-/on-finished-2.3.0.tgz#20f1336481b083cd75337992a16971aa2d906947"
     integrity sha1-IPEzZIGwg811M3mSoWlxqi2QaUc=

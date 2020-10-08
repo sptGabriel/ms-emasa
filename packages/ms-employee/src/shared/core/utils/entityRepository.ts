@@ -14,10 +14,12 @@ export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
   protected db: Knex;
   protected tableName: string;
   protected mapper: IMapper<T>;
+  protected transactionProvider: () => Promise<Knex.Transaction<any, any>>;
   constructor(knex: Knex, mapper: IMapper<T>, table: string) {
     this.db = knex;
     this.mapper = mapper;
     this.tableName = table;
+    this.transactionProvider = this.db.transactionProvider();
   }
   abstract find(id: string): Promise<T>;
   abstract findAll(): Promise<T[]>;

@@ -5,13 +5,13 @@ import { DepartamentMapper } from '../mappers/departament.mapper';
 import { IDepartamentRepository } from '../infrastucture/contracts/departamentRepository';
 import Knex from 'knex';
 import { IMapper } from 'shared/core/infra/mapper';
-
+import { KnexInstance } from '@infra/knex/knexConnection';
 export class DepartamentRepository
   extends BaseRepository<Departament>
   implements IDepartamentRepository<Departament> {
   constructor(
-    connection: Knex,
-    mapper: IMapper<Departament>,
+    connection: Knex = container.resolve(KnexInstance).Knex,
+    mapper: IMapper<Departament> = container.resolve(DepartamentMapper),
     table: string = 'departaments',
   ) {
     super(connection, mapper, table);
@@ -39,16 +39,17 @@ export class DepartamentRepository
     return toDomainResults;
   };
   public create = async (item: any): Promise<Departament> => {
-    const promisify = (fn: any) => new Promise(resolve => fn(resolve));
-    const trx: Knex.Transaction = <Knex.Transaction>(
-      await promisify(this.db.transaction)
-    );
+    // const promisify = (fn: any) => new Promise(resolve => fn(resolve));
+    // const trx: Knex.Transaction = <Knex.Transaction>(
+    //   await promisify(this.db.transaction)
+    // );
+    const trx = await this.transactionProvider();
     try {
       const rawExists = await this.findByName(item.departament_name);
       if (rawExists) Promise.reject(new Error('Data already exists'));
       const rawResult = await trx()
         .insert(item)
-        .into<IDepartamentProps>('departaments')
+        .into<IDepartamentProps>(this.tableName)
         .returning('*');
       const toDomainResult = await this.Mapper.toDomain(rawResult);
       await trx.commit();
@@ -59,24 +60,37 @@ export class DepartamentRepository
     }
   };
   public update = async (id: string, item: any): Promise<Departament> => {
-    const { departament_name, manager_id } = item;
-    const rawResult = await this.db
-      .update({
-        departament_name,
-        manager_id,
-      })
-      .where({ id })
-      .returning('*');
-    const rawToDomain = await this.Mapper.toDomain(rawResult);
-    return rawToDomain;
+    const trx = await this.transactionProvider();
+    try {
+      const { departament_name, manager_id } = item;
+      const rawResult = await trx()
+        .update({
+          departament_name,
+          manager_id,
+        })
+        .where({ id })
+        .returning('*');
+      await trx.commit();
+      const rawToDomain = await this.Mapper.toDomain(rawResult);
+      return rawToDomain;
+    } catch (error) {
+      trx.rollback();
+      return Promise.reject('Error adding departament Name: ' + error);
+    }
   };
   public delete = async (id: string): Promise<Departament> => {
-    const rawResult = await this.db
-      .where({ id })
-      .update('deleted_at', new Date())
-      .returning('*');
-    const rawToDomain = await this.Mapper.toDomain(rawResult);
-    return rawToDomain;
+    const trx = await this.transactionProvider();
+    try {
+      const rawResult = await trx()
+        .where({ id })
+        .update('deleted_at', new Date())
+        .returning('*');
+      const rawToDomain = await this.Mapper.toDomain(rawResult);
+      return rawToDomain;
+    } catch (error) {
+      trx.rollback();
+      return Promise.reject('Error adding departament Name: ' + error);
+    }
   };
   public findByName = async (
     departament_name: string,

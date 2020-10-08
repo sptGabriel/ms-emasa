@@ -3,7 +3,6 @@ import { Departament, IDepartamentProps } from '../../domain/departament';
 import { IUseCase } from 'shared/core/domain/use-case';
 import { Either, left, right } from 'shared/core/utils/result';
 import { DepartamentRepository } from '../../infrastucture/departament.repository';
-import { BaseRepository } from 'shared/core/utils/entityRepository';
 
 export class CreateDepartamentUseCase
   implements

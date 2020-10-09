@@ -7,6 +7,6 @@ const createDepartamentuseCase = new CreateDepartamentUseCase(
   departamentRepository,
 );
 const createDepartamentController = new CreateDepartamentController(
-  createDepartamentuseCase,
+  createDepartamentuseCase
 );
 export { createDepartamentController, createDepartamentuseCase };

@@ -2,6 +2,7 @@ import { Entity } from './entity';
 import { DomainEvents } from './events/domain-event';
 import { IDomainEvent } from './events/domainEvent-contract';
 import pino from 'pino';
+import { JSONObject } from 'tiny-types';
 const logger = pino({ level: 'error' });
 export abstract class AggregateRoot<T> extends Entity<T> {
   _version: number = 0;
@@ -10,8 +11,8 @@ export abstract class AggregateRoot<T> extends Entity<T> {
   get domainEvents(): IDomainEvent[] {
     return this._domainEvents;
   }
-  get id(): string {
-    return this._id;
+  get Identity(): string {
+    return this.id;
   }
   protected when(domainEvent: IDomainEvent): void {
     // Add the domain event to this aggregate's list of domain events
@@ -38,9 +39,9 @@ export abstract class AggregateRoot<T> extends Entity<T> {
       domainEventClass.constructor.name,
     );
   }
-
   private addEvent(event: IDomainEvent): void {
     this._domainEvents.push(event);
     this._version++;
   }
+  abstract serialize(): any;
 }

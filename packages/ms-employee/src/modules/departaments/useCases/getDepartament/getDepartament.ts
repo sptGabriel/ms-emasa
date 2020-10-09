@@ -17,6 +17,6 @@ export class getDepartamentUseCase
       departament_name,
     );
     if (!departamentExists) return left(new Error('Method not implemented.'));
-    return right(departamentExists);
+    return right(departamentExists.toJson());
   };
 }

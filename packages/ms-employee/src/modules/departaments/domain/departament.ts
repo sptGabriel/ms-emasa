@@ -3,6 +3,7 @@ import { AggregateRoot } from 'shared/core/domain/aggregate-root';
 import { Guard } from 'shared/core/utils/guard';
 import { LocationCreatedEvent } from './events/locationCreated-Event';
 import { uuid, isUuid } from 'uuidv4';
+import { validate } from 'uuid';
 export interface IDepartamentProps {
   departament_name: string;
   manager_id: string;
@@ -28,11 +29,10 @@ export class Departament extends AggregateRoot<IDepartamentProps> {
       ];
       const guardResult = Guard.againstNullOrUndefinedBulk(guardedProps);
       if (!guardResult.succeeded) reject(left(new Error(guardResult.message)));
-      if (!isUuid(props.manager_id)) {
+      if (!validate(props.manager_id)) {
         return reject(left(new Error(`Manager_id not is a valid UUID`)));
       }
       const departament = new Departament(props, id);
-      console.log(departament);
       const idWasProvided = !!id;
       if (!idWasProvided) {
         departament.when(new LocationCreatedEvent(departament));
@@ -42,4 +42,10 @@ export class Departament extends AggregateRoot<IDepartamentProps> {
       throw error;
     });
   };
+  public toJson(): any {
+    const { id, props } = this;
+    const { departament_name, manager_id } = this.props;
+    const result = { id, departament_name, manager_id };
+    return result;
+  }
 }

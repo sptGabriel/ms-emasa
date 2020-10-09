@@ -1,13 +1,14 @@
 import { ensure } from 'tiny-types/lib/ensure';
 import { isDefined, Predicate, TinyType } from 'tiny-types';
-import { uuid, isUuid } from 'uuidv4';
+import { uuid } from 'uuidv4';
+import { validate } from 'uuid';
 
 export abstract class Entity<T> {
-  protected readonly _id: string;
+  protected readonly id: string;
   public readonly props: T;
   constructor(props: T, id?: string) {
-    if (id && !isUuid(id)) throw new Error('Invalid id');
-    this._id = id || uuid();
+    if (id && !validate(id)) throw new Error('Invalid id');
+    this.id = id || uuid();
     this.props = props;
   }
   public equals(object: Entity<T>): boolean {
@@ -21,7 +22,7 @@ export abstract class Entity<T> {
       return false;
     }
 
-    return this._id === object._id ? true : false;
+    return this.id === object.id ? true : false;
   }
 }
 function isEntity(v?: object): boolean {

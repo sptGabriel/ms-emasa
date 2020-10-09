@@ -14,11 +14,11 @@ const database: KnexConfig = {
   development: {
     client: 'postgresql',
     connection: {
-      port: process.env.DB_PORT,
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
+      port: 5433,
+      host: 'localhost',
+      user: 'emasa',
+      password: 'emasa03210',
+      database: 'emasa_ti',
     },
     pool: {
       min: 2,
@@ -32,6 +32,8 @@ const database: KnexConfig = {
     },
     seeds: {
       loadExtensions: ['.ts'],
+      directory: path.resolve(__dirname, '../infra/knex/seeds'),
+      extension: extension,
     },
     timezone: 'UTC',
     useNullAsDefault: true,

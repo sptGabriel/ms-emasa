@@ -4,18 +4,17 @@ import { IUseCase } from 'shared/core/domain/use-case';
 import { Either, left, right } from 'shared/core/utils/result';
 import { DepartamentRepository } from '../../infrastucture/departament.repositoryImpl';
 
-export class CreateDepartamentUseCase
-  implements
-    IUseCase<IDepartamentProps, Promise<Either<AppError, Departament>>> {
+export class getDepartamentUseCase
+  implements IUseCase<any, Promise<Either<AppError, Departament>>> {
   private departamentRepository: DepartamentRepository;
   constructor(departamentRepository: DepartamentRepository) {
     this.departamentRepository = departamentRepository;
   }
   public execute = async (
-    request: IDepartamentProps,
+    departament_name: string,
   ): Promise<Either<AppError, Departament>> => {
     const departamentExists = await this.departamentRepository.findByName(
-      request?.departament_name,
+      departament_name,
     );
     if (!departamentExists) return left(new Error('Method not implemented.'));
     return right(departamentExists);

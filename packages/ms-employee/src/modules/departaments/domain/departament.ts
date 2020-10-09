@@ -28,10 +28,11 @@ export class Departament extends AggregateRoot<IDepartamentProps> {
       ];
       const guardResult = Guard.againstNullOrUndefinedBulk(guardedProps);
       if (!guardResult.succeeded) reject(left(new Error(guardResult.message)));
-      if (isUuid(props.manager_id)) {
+      if (!isUuid(props.manager_id)) {
         return reject(left(new Error(`Manager_id not is a valid UUID`)));
       }
       const departament = new Departament(props, id);
+      console.log(departament);
       const idWasProvided = !!id;
       if (!idWasProvided) {
         departament.when(new LocationCreatedEvent(departament));

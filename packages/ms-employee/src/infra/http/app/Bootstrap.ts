@@ -1,7 +1,7 @@
 import { ExpressServer, WebServer } from './WebServer';
 import { container } from 'tsyringe';
-import { KnexInstance } from '@infra/knex/knexConnection';
 import * as knexConfig from '@config/knexfile';
+import { IDatabase } from './DataBase';
 
 export interface BootStrapContainer {
   server: WebServer;
@@ -9,13 +9,13 @@ export interface BootStrapContainer {
 
 export class BootstrapApplication {
   private server: WebServer;
-  private knex: KnexInstance;
-  constructor(server: WebServer, knex: KnexInstance) {
+  private database: IDatabase;
+  constructor(server: WebServer, database: IDatabase) {
     this.server = server;
-    this.knex = knex;
+    this.database = database;
   }
   public start = async () => {
-    await this.knex.start();
     await this.server.start();
+    await this.database.start();
   };
 }

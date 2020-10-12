@@ -2,18 +2,25 @@ import { Either, left, right } from '../../../shared/core/utils/result';
 import { AggregateRoot } from 'shared/core/domain/aggregate-root';
 import { Guard } from 'shared/core/utils/guard';
 import { LocationCreatedEvent } from './events/locationCreated-Event';
-import { uuid, isUuid } from 'uuidv4';
 import { validate } from 'uuid';
+import { Employee } from '@modules/employees/domain/employee';
 export interface IDepartamentProps {
+  id: string;
   departament_name: string;
-  manager_id: string;
+  manager: Employee;
+  employees?: string[];
 }
-export class Departament extends AggregateRoot<IDepartamentProps> {
+export interface IDepartamentResponse {
+  id: string;
+  departament_name: string;
+  manager_id: string | null;
+}
+export class Departament extends AggregateRoot<Omit<IDepartamentProps, 'id'>> {
   get DepartamentName(): string {
     return this.props.departament_name;
   }
   get ManagerID(): string {
-    return this.props.manager_id;
+    return this.props.manager.Identity;
   }
   private constructor(props: IDepartamentProps, id?: string) {
     super(props, id);
@@ -25,11 +32,11 @@ export class Departament extends AggregateRoot<IDepartamentProps> {
     return new Promise<Either<Error, Departament>>((resolve, reject) => {
       const guardedProps = [
         { argument: props.departament_name, argumentName: 'departament_name' },
-        { argument: props.manager_id, argumentName: 'manager_id' },
+        { argument: props.manager, argumentName: 'manager' },
       ];
       const guardResult = Guard.againstNullOrUndefinedBulk(guardedProps);
       if (!guardResult.succeeded) reject(left(new Error(guardResult.message)));
-      if (!validate(props.manager_id)) {
+      if (!validate(props.manager.Identity)) {
         return reject(left(new Error(`Manager_id not is a valid UUID`)));
       }
       const departament = new Departament(props, id);
@@ -42,10 +49,11 @@ export class Departament extends AggregateRoot<IDepartamentProps> {
       throw error;
     });
   };
-  public toJson(): any {
-    const { id, props } = this;
-    const { departament_name, manager_id } = this.props;
-    const result = { id, departament_name, manager_id };
-    return result;
+  public serialize(): IDepartamentResponse {
+    return {
+      id: this.id,
+      departament_name: this.DepartamentName,
+      manager_id: this.ManagerID,
+    };
   }
 }

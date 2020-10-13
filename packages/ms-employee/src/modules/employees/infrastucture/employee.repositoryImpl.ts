@@ -21,7 +21,7 @@ export class EmployeeRepository
   ): Promise<Employee | undefined> => {
     const rawEmployee = await this.db
       .select('*')
-      .from<IEmployeeProps>(this.tableName)
+      .from<Employee>(this.tableName)
       .where('matricula', matricula)
       .returning('*');
     const employeeDomain = await this.Mapper.toDomain(rawEmployee);

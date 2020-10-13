@@ -4,15 +4,12 @@ import { IDomainEvent } from './events/domainEvent-contract';
 import pino from 'pino';
 import { JSONObject } from 'tiny-types';
 const logger = pino({ level: 'error' });
-export abstract class AggregateRoot<T> extends Entity<T> {
+export abstract class AggregateRoot {
   _version: number = 0;
   readonly fetchVersion: number;
   private _domainEvents: IDomainEvent[] = [];
   get domainEvents(): IDomainEvent[] {
     return this._domainEvents;
-  }
-  get Identity(): string {
-    return this.id;
   }
   protected when(domainEvent: IDomainEvent): void {
     // Add the domain event to this aggregate's list of domain events

@@ -6,7 +6,6 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.alterTable('departaments', table => {
     table
       .uuid('manager_id')
-      .notNullable()
       .references('employees.id')
       .onUpdate('CASCADE') // if Article primary key is changed, update this foreign key.
       .onDelete('NO ACTION')

@@ -7,7 +7,7 @@ import { Employee } from '@modules/employees/domain/employee';
 export interface IDepartamentProps {
   id: string;
   departament_name: string;
-  manager: Employee;
+  manager: Employee | null;
 }
 export class Departament extends AggregateRoot implements IDepartamentProps {
   readonly id: string;

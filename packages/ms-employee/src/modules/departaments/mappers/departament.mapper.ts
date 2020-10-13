@@ -12,9 +12,10 @@ export class DepartamentMapper implements IMapper<Departament> {
   };
   public toDomain = async (raw: any): Promise<Departament> => {
     if (raw instanceof Departament) return raw;
-    const { departament_name, manager_id, id } = raw;
+    const { departament_name, id } = raw;
+    const manager = raw.manager ? raw.manager : null;
     const departament = await Departament.create(
-      { departament_name, manager_id },
+      { departament_name, manager },
       id ? id : uuid(),
     );
     if (departament.isLeft()) throw departament.value;

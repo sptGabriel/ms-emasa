@@ -97,9 +97,12 @@ export class DepartamentRepository
   ): Promise<Departament | undefined> => {
     const rawDepartament = await this.db
       .select('*')
-      .from<IDepartamentProps>(this.tableName)
+      .from<Departament>(this.tableName)
       .where({ departament_name })
-      .first();
+      .innerJoin('employees', 'manager_id', 'id')
+      .first()
+      .returning('*');
+    console.log(rawDepartament);
     if (!rawDepartament) return undefined;
     const departamentDomain = await this.Mapper.toDomain(rawDepartament);
     return departamentDomain;

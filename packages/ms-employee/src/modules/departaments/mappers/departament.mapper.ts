@@ -10,15 +10,5 @@ export class DepartamentMapper implements IMapper<Departament> {
   public toPersistence = (t: any): Departament => {
     throw new Error('Method not implemented.');
   };
-  public toDomain = async (raw: any): Promise<Departament> => {
-    if (raw instanceof Departament) return raw;
-    const { departament_name, id } = raw;
-    const manager = raw.manager ? raw.manager : null;
-    const departament = await Departament.create(
-      { departament_name, manager },
-      id ? id : uuid(),
-    );
-    if (departament.isLeft()) throw departament.value;
-    return departament.value;
-  };
+  public toDomain = async (raw: any): Promise<Departament> => {};
 }

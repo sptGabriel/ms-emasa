@@ -6,6 +6,7 @@ import { IDepartamentRepository } from './departament.repository';
 import Knex from 'knex';
 import { IMapper } from 'shared/core/infra/mapper';
 import { Database } from '@infra/http/app/DataBase';
+import { Employee } from '@modules/employees/domain/employee';
 export class DepartamentRepository
   extends BaseRepository<Departament>
   implements IDepartamentRepository<Departament> {
@@ -96,13 +97,15 @@ export class DepartamentRepository
     departament_name: string,
   ): Promise<Departament | undefined> => {
     const rawDepartament = await this.db
-      .select('*')
-      .from<Departament>(this.tableName)
+      .select<Departament>([
+        `${this.tableName}.*`,
+        this.db.raw('to_json(employees.*) as Manager'),
+      ])
+      .from(this.tableName)
       .where({ departament_name })
-      .innerJoin('employees', 'manager_id', 'id')
-      .first()
-      .returning('*');
-    console.log(rawDepartament);
+      .options({ nestTables: true })
+      .innerJoin('employees', `${this.tableName}.manager_id`, 'employees.id')
+      .first();
     if (!rawDepartament) return undefined;
     const departamentDomain = await this.Mapper.toDomain(rawDepartament);
     return departamentDomain;

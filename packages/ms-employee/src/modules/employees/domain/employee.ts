@@ -17,63 +17,31 @@ export class Employee extends AggregateRoot implements IEmployeeProps {
   readonly first_name: string;
   readonly last_name: string;
   readonly departament: Departament;
-  private constructor(props: Omit<IEmployeeProps, 'id'>, id?: string) {
+  private constructor(props: IEmployeeProps) {
     super();
     Object.assign(this, props);
-    if (!id) this.id = v4();
+    if (!props.id) this.id = v4();
   }
-  public static create = (
-    props: Omit<IEmployeeProps, 'id'>,
-    id?: string,
-  ): Promise<Either<Error, Employee>> => {
-    return new Promise<Either<Error, Employee>>((resolve, reject) => {
-      const isUUID = id ? validate(id) : false;
-      if (!isUUID) return reject(left(new Error(`Id not is a valid UUID`)));
-      const employee = new Employee(props, id);
-      return resolve(right(employee));
-    }).catch((error: Error) => {
-      throw error;
-    });
+  public static create = (props: IEmployeeProps): Either<Error, Employee> => {
+    const isUUID = props.id ? validate(props.id) : false;
+    if (!isUUID) return left(new Error(`Id not is a valid UUID`));
+    const employee = new Employee(props);
+    return right(employee);
   };
   serialize() {
     throw new Error('Method not implemented.');
   }
-  static fromPrimitives(plainData: IEmployeeProps, id:string): Employee {
-    return new Employee(
-      plainData,id
-    );
+  static fromPrimitives(data: IEmployeeProps): Employee {
+    return new Employee(data);
   }
 
-  toPrimitives():IEmployeeProps {
+  toPrimitives(): IEmployeeProps {
     return {
       id: this.id,
       first_name: this.first_name,
       last_name: this.last_name,
       matricula: this.matricula,
-      departament: this.departament
-    }
+      departament: this.departament,
+    };
+  }
 }
-
-// export class Employee extends AggregateRoot<Omit<IEmployeeProps, 'id'>> {
-//   private constructor(props: IEmployeeProps, id?: string) {
-//     super(props, id);
-//   }
-//   public static create = (
-//     props: Omit<IEmployeeProps, 'id'>,
-//     id?: string,
-//   ): Promise<Either<Error, Employee>> => {
-//     return new Promise<Either<Error, Employee>>((resolve, reject) => {
-//       if (!id) id = v4();
-//       if (!validate(id)) {
-//         return reject(left(new Error(`Id not is a valid UUID`)));
-//       }
-//       const employee = new Employee(props, id);
-//       return resolve(right(employee));
-//     }).catch((error: Error) => {
-//       throw error;
-//     });
-//   };
-//   public serialize() {
-//     return null;
-//   }
-// }

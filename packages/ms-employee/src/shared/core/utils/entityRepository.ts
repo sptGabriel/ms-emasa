@@ -13,11 +13,9 @@ export interface IWrite<T> {
 export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
   protected db: Knex;
   protected tableName: string;
-  protected mapper: IMapper<T>;
   protected transactionProvider: () => Promise<Knex.Transaction<any, any>>;
-  constructor(knex: Knex, mapper: IMapper<T>, table: string) {
+  constructor(knex: Knex, table: string) {
     this.db = knex;
-    this.mapper = mapper;
     this.tableName = table;
     this.transactionProvider = this.db.transactionProvider();
   }
@@ -26,10 +24,6 @@ export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
   abstract create(item: Object): Promise<T>;
   abstract update(id: string, item: T): Promise<T>;
   abstract delete(id: string): Promise<T>;
-  public get Mapper() {
-    if (!this.mapper) throw new Error('Mapper not implemented.');
-    return this.mapper;
-  }
   public get Connection() {
     if (!this.db) throw new Error('Knex connection instance not implemented.');
     return this.db;

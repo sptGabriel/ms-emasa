@@ -15,8 +15,8 @@ export class CreateDepartamentController extends BaseController {
     const dto = this.request.body as IDepartamentProps;
     try {
       const result = await this.useCase.execute(dto);
-      if (result.isLeft()) return result.value;
-      return result.value;
+      if (result.isLeft()) return this.response.json(result.value);
+      return this.response.json(result.value);
     } catch (err) {}
   }
 }

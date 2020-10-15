@@ -5,7 +5,7 @@ import { Either, left, right } from 'shared/core/utils/result';
 import { EmployeeRepository } from '../../infrastucture/employee.repositoryImpl';
 import { createEmployeeDTO } from './createEmployee_DTO';
 import { DepartamentRepository } from '@modules/departaments/infrastucture/departament.repositoryImpl';
-export class CreateDepartamentUseCase
+export class CreateEmployeeUseCase
   implements IUseCase<createEmployeeDTO, Promise<Either<AppError, Employee>>> {
   private departamentRepository: DepartamentRepository;
   private employeeRepository: EmployeeRepository;
@@ -27,12 +27,6 @@ export class CreateDepartamentUseCase
       request.matricula,
     );
     if (employeeExists) return left(new Error('Employee already exists.'));
-    const domainEmployee = await Employee.create({
-      departament: departamentExists,
-      first_name: request.first_name,
-      last_name: request.last_name,
-      matricula: request.matricula,
-    });
     const employee = await this.employeeRepository
       .create(request)
       .catch(err => {

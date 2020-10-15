@@ -1,16 +1,16 @@
 import { BaseController } from 'shared/core/infra/base-controller';
-import { getDepartamentUseCase } from './getEmployee';
-export class GetDepartamentController extends BaseController {
-  private useCase: getDepartamentUseCase;
-  constructor(useCase: getDepartamentUseCase) {
+import { getEmployeeUseCase } from './getEmployee';
+export class GetEmployeeController extends BaseController {
+  private useCase: getEmployeeUseCase;
+  constructor(useCase: getEmployeeUseCase) {
     super();
     this.useCase = useCase;
   }
 
   protected async executeImpl() {
-    const departament_name = this.request.params.departament_name;
+    const matricula = this.request.params.matricula;
     try {
-      const result = await this.useCase.execute(departament_name);
+      const result = await this.useCase.execute(matricula);
       if (result.isLeft()) return this.response.send(result.value);
       return this.response.json(result.value);
     } catch (err) {}

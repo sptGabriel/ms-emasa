@@ -1,12 +1,15 @@
 import { DepartamentRepository } from '@modules/departaments/infrastucture/departament.repositoryImpl';
-import { CreateDepartamentUseCase } from './createEmployee';
-import { CreateDepartamentController } from './createEmployeeController';
+import { EmployeeRepository } from '@modules/employees/infrastucture/employee.repositoryImpl';
+import { CreateEmployeeUseCase } from './createEmployee';
+import { CreateEmployeeController } from './createEmployeeController';
 
 const departamentRepository = new DepartamentRepository();
-const createDepartamentuseCase = new CreateDepartamentUseCase(
+const employeeRepository = new EmployeeRepository();
+const createEmployeeUseCase = new CreateEmployeeUseCase(
   departamentRepository,
+  employeeRepository,
 );
-const createDepartamentController = new CreateDepartamentController(
-  createDepartamentuseCase,
+const createEmployeeController = new CreateEmployeeController(
+  createEmployeeUseCase,
 );
-export { createDepartamentController, createDepartamentuseCase };
+export { createEmployeeController, createEmployeeUseCase };

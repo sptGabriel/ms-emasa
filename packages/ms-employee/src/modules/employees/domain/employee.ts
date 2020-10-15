@@ -4,12 +4,18 @@ import { Guard } from 'shared/core/utils/guard';
 import { LocationCreatedEvent } from './events/locationCreated-Event';
 import { validate, v4 } from 'uuid';
 import { Departament } from '@modules/departaments/domain/departament';
+export enum EnumEmployeePostions {
+  diretor = 'diretor',
+  gerente = 'gerente',
+  tecnico = 'tecnico',
+}
 export interface IEmployeeProps {
   id?: string;
   matricula: string;
   first_name: string;
   last_name: string;
   departament: Departament;
+  position: EnumEmployeePostions;
 }
 export class Employee extends AggregateRoot implements IEmployeeProps {
   readonly id: string;
@@ -17,6 +23,7 @@ export class Employee extends AggregateRoot implements IEmployeeProps {
   readonly first_name: string;
   readonly last_name: string;
   readonly departament: Departament;
+  readonly position: EnumEmployeePostions;
   private constructor(props: IEmployeeProps) {
     super();
     Object.assign(this, props);
@@ -31,17 +38,12 @@ export class Employee extends AggregateRoot implements IEmployeeProps {
   serialize() {
     throw new Error('Method not implemented.');
   }
-  static fromPrimitives(data: IEmployeeProps): Employee {
-    return new Employee(data);
-  }
-
-  toPrimitives(): IEmployeeProps {
-    return {
-      id: this.id,
-      first_name: this.first_name,
-      last_name: this.last_name,
-      matricula: this.matricula,
-      departament: this.departament,
-    };
-  }
+  public static toDomain = (props: IEmployeeProps) => {
+    const employee = Employee.create({
+      ...props,
+      departament: Departament.toDomain(props.departament),
+    });
+    if (employee.isLeft()) throw employee.value;
+    return employee.value;
+  };
 }

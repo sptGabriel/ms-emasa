@@ -1,18 +1,14 @@
-import {
-  Departament,
-  IDepartamentProps,
-} from '@modules/departaments/domain/departament';
+import { createEmployeeDTO } from './createEmployee_DTO';
 import { BaseController } from 'shared/core/infra/base-controller';
-import { CreateDepartamentUseCase } from './createEmployee';
-export class CreateDepartamentController extends BaseController {
-  private useCase: CreateDepartamentUseCase;
-  constructor(useCase: CreateDepartamentUseCase) {
+import { CreateEmployeeUseCase } from './createEmployee';
+export class CreateEmployeeController extends BaseController {
+  private useCase: CreateEmployeeUseCase;
+  constructor(useCase: CreateEmployeeUseCase) {
     super();
     this.useCase = useCase;
   }
-
   protected async executeImpl() {
-    const dto = this.request.body as IDepartamentProps;
+    const dto = this.request.body as createEmployeeDTO;
     try {
       const result = await this.useCase.execute(dto);
       if (result.isLeft()) return result.value;

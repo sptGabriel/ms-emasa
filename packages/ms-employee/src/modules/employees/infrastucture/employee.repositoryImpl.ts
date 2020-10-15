@@ -1,7 +1,6 @@
 import { Employee, IEmployeeProps } from '../domain/employee';
 import { BaseRepository } from 'shared/core/utils/entityRepository';
 import { container } from 'tsyringe';
-import { EmployeeMapper } from '../mappers/employee.mapper';
 import { IEmployeeRepository } from './employee.repository';
 import Knex from 'knex';
 import { IMapper } from 'shared/core/infra/mapper';
@@ -11,20 +10,29 @@ export class EmployeeRepository
   implements IEmployeeRepository<Employee> {
   constructor(
     connection: Knex = container.resolve(Database).getConnection(),
-    mapper: IMapper<Employee> = container.resolve(EmployeeMapper),
     table: string = 'employees',
   ) {
-    super(connection, mapper, table);
+    super(connection, table);
   }
   public findbyMatricula = async (
     matricula: string,
   ): Promise<Employee | undefined> => {
     const rawEmployee = await this.db
-      .select('*')
-      .from<Employee>(this.tableName)
+      .select<IEmployeeProps>([
+        `${this.tableName}.*`,
+        this.db.raw('to_json(departaments.*) as Departament'),
+      ])
+      .from(this.tableName)
       .where('matricula', matricula)
+      .options({ nestTables: true })
+      .innerJoin(
+        'departaments',
+        `${this.tableName}.departament_id`,
+        'departaments.id',
+      )
       .returning('*');
-    const employeeDomain = await this.Mapper.toDomain(rawEmployee);
+    if (!rawEmployee) return undefined;
+    const employeeDomain = Employee.toDomain(rawEmployee[0]);
     return employeeDomain;
   };
   public find = async (id: string): Promise<Employee> => {
@@ -33,7 +41,7 @@ export class EmployeeRepository
       .from<IEmployeeProps>(this.tableName)
       .where('id', id)
       .returning('*');
-    const departamentDomain = await this.Mapper.toDomain(rawDepartament);
+    const departamentDomain = Employee.toDomain(rawDepartament[0]);
     return departamentDomain;
   };
   public findAll = async (): Promise<Employee[]> => {
@@ -44,7 +52,7 @@ export class EmployeeRepository
       .returning('*');
     const toDomainResults = [];
     for (let raw of rawResults) {
-      const rawValue = await this.Mapper.toDomain(raw);
+      const rawValue = Employee.toDomain(raw);
       toDomainResults.push(rawValue);
     }
     return toDomainResults;
@@ -56,7 +64,7 @@ export class EmployeeRepository
         .insert(item)
         .into(this.tableName)
         .returning('*');
-      const toDomainResult = await this.Mapper.toDomain(rawResult);
+      const toDomainResult = Employee.toDomain(rawResult[0]);
       await trx.commit();
       return toDomainResult;
     } catch (error) {
@@ -76,7 +84,7 @@ export class EmployeeRepository
         .where({ id })
         .returning('*');
       await trx.commit();
-      const rawToDomain = await this.Mapper.toDomain(rawResult);
+      const rawToDomain = Employee.toDomain(rawResult[0]);
       return rawToDomain;
     } catch (error) {
       trx.rollback();
@@ -90,7 +98,7 @@ export class EmployeeRepository
         .where({ id })
         .update('deleted_at', new Date())
         .returning('*');
-      const rawToDomain = await this.Mapper.toDomain(rawResult);
+      const rawToDomain = Employee.toDomain(rawResult[0]);
       return rawToDomain;
     } catch (error) {
       trx.rollback();

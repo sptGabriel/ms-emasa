@@ -15,9 +15,13 @@ export class CreateDepartamentUseCase
     request: IDepartamentProps,
   ): Promise<Either<AppError, Departament>> => {
     const departamentExists = await this.departamentRepository.findByName(
-      request?.departament_name,
+      request.departament_name,
     );
-    if (!departamentExists) return left(new Error('Method not implemented.'));
-    return right(departamentExists);
+    if (departamentExists) return left(new Error('Method not implemented.'));
+    const domainDepartament = Departament.toDomain(request);
+    const departament = await this.departamentRepository.create(
+      domainDepartament,
+    );
+    return right(departament);
   };
 }

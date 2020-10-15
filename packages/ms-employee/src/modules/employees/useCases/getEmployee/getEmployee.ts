@@ -1,22 +1,28 @@
 import { AppError } from '@infra/http/app/BaseError';
-import { Departament, IDepartamentProps } from '../../domain/departament';
 import { IUseCase } from 'shared/core/domain/use-case';
 import { Either, left, right } from 'shared/core/utils/result';
-import { DepartamentRepository } from '../../infrastucture/employee.repositoryImpl';
+import { EmployeeRepository } from '../../infrastucture/employee.repositoryImpl';
+import { Employee } from '@modules/employees/domain/employee';
+import { DepartamentRepository } from '@modules/departaments/infrastucture/departament.repositoryImpl';
 
-export class getDepartamentUseCase
-  implements IUseCase<any, Promise<Either<AppError, Departament>>> {
+export class GetEmployeeUseCase
+  implements IUseCase<any, Promise<Either<AppError, Employee>>> {
   private departamentRepository: DepartamentRepository;
-  constructor(departamentRepository: DepartamentRepository) {
+  private employeeRepository: EmployeeRepository;
+  constructor(
+    departamentRepository: DepartamentRepository,
+    employeeRepository: EmployeeRepository,
+  ) {
     this.departamentRepository = departamentRepository;
+    this.employeeRepository = employeeRepository;
   }
   public execute = async (
-    departament_name: string,
-  ): Promise<Either<AppError, Departament>> => {
-    const departamentExists = await this.departamentRepository.findByName(
-      departament_name,
+    matricula: string,
+  ): Promise<Either<AppError, Employee>> => {
+    const employeeExists = await this.employeeRepository.findbyMatricula(
+      matricula,
     );
-    if (!departamentExists) return left(new Error('Method not implemented.'));
-    return right(departamentExists.toJson());
+    if (!employeeExists) return left(new Error('Method not implemented.'));
+    return right(employeeExists);
   };
 }

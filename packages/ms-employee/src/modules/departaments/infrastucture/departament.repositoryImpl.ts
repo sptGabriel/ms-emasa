@@ -1,7 +1,6 @@
 import { Departament, IDepartamentProps } from '../domain/departament';
 import { BaseRepository } from 'shared/core/utils/entityRepository';
 import { container } from 'tsyringe';
-import { DepartamentMapper } from '../mappers/departament.mapper';
 import { IDepartamentRepository } from './departament.repository';
 import Knex from 'knex';
 import { IMapper } from 'shared/core/infra/mapper';
@@ -12,18 +11,18 @@ export class DepartamentRepository
   implements IDepartamentRepository<Departament> {
   constructor(
     connection: Knex = container.resolve(Database).getConnection(),
-    mapper: IMapper<Departament> = container.resolve(DepartamentMapper),
     table: string = 'departaments',
   ) {
-    super(connection, mapper, table);
+    super(connection, table);
   }
   public find = async (id: string): Promise<Departament> => {
     const rawDepartament = await this.db
       .select('*')
       .from<IDepartamentProps>(this.tableName)
       .where('id', id)
+      .first()
       .returning('*');
-    const departamentDomain = await this.Mapper.toDomain(rawDepartament);
+    const departamentDomain = Departament.toDomain(rawDepartament[0]);
     return departamentDomain;
   };
   public findAll = async (): Promise<Departament[]> => {
@@ -34,25 +33,22 @@ export class DepartamentRepository
       .returning('*');
     const toDomainResults = [];
     for (let raw of rawResults) {
-      const rawValue = await this.Mapper.toDomain(raw);
+      const rawValue = Departament.toDomain(raw);
       toDomainResults.push(rawValue);
     }
     return toDomainResults;
   };
-  public create = async (item: any): Promise<Departament> => {
+  public create = async (item: IDepartamentProps): Promise<Departament> => {
     // const promisify = (fn: any) => new Promise(resolve => fn(resolve));
     // const trx: Knex.Transaction = <Knex.Transaction>(
     //   await promisify(this.db.transaction)
     // );
     const trx = await this.transactionProvider();
     try {
-      const rawExists = await this.findByName(item.departament_name);
-      if (rawExists) Promise.reject(new Error('Data already exists'));
-      const rawResult = await trx()
-        .insert(item)
-        .into<IDepartamentProps>(this.tableName)
+      const rawResult = await trx(this.tableName)
+        .insert({ id: item.id, departament_name: item.departament_name })
         .returning('*');
-      const toDomainResult = await this.Mapper.toDomain(rawResult);
+      const toDomainResult = Departament.toDomain(rawResult[0]);
       await trx.commit();
       return toDomainResult;
     } catch (error) {
@@ -70,9 +66,10 @@ export class DepartamentRepository
           manager_id,
         })
         .where({ id })
+        .first()
         .returning('*');
       await trx.commit();
-      const rawToDomain = await this.Mapper.toDomain(rawResult);
+      const rawToDomain = Departament.toDomain(rawResult[0]);
       return rawToDomain;
     } catch (error) {
       trx.rollback();
@@ -85,8 +82,9 @@ export class DepartamentRepository
       const rawResult = await trx()
         .where({ id })
         .update('deleted_at', new Date())
+        .first()
         .returning('*');
-      const rawToDomain = await this.Mapper.toDomain(rawResult);
+      const rawToDomain = Departament.toDomain(rawResult[0]);
       return rawToDomain;
     } catch (error) {
       trx.rollback();
@@ -97,17 +95,12 @@ export class DepartamentRepository
     departament_name: string,
   ): Promise<Departament | undefined> => {
     const rawDepartament = await this.db
-      .select<Departament>([
-        `${this.tableName}.*`,
-        this.db.raw('to_json(employees.*) as Manager'),
-      ])
-      .from(this.tableName)
+      .select('*')
+      .from<IDepartamentProps>(this.tableName)
       .where({ departament_name })
-      .options({ nestTables: true })
-      .innerJoin('employees', `${this.tableName}.manager_id`, 'employees.id')
-      .first();
-    if (!rawDepartament) return undefined;
-    const departamentDomain = await this.Mapper.toDomain(rawDepartament);
+      .returning('*');
+    if (rawDepartament.length === 0) return undefined;
+    const departamentDomain = Departament.toDomain(rawDepartament[0]);
     return departamentDomain;
   };
 }

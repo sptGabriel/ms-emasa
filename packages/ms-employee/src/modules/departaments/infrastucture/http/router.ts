@@ -2,7 +2,7 @@ import { createDepartamentController } from '@modules/departaments/useCases/crea
 import { getDepartamentController } from '@modules/departaments/useCases/getDepartament/';
 import { Router } from 'express';
 const departamentRouter = Router();
-departamentRouter.post('/departaments', (request, response) =>
+departamentRouter.post('/departament/create', (request, response) =>
   createDepartamentController.execute(request, response),
 );
 departamentRouter.get('/departaments/:departament_name', (request, response) =>

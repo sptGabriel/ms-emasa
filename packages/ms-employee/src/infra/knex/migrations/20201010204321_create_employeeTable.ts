@@ -15,14 +15,14 @@ export async function up(knex: Knex): Promise<void> {
           .references('departaments.id')
           .onUpdate('CASCADE') // if Article primary key is changed, update this foreign key.
           .onDelete('NO ACTION');
-        table.enu('positions', ['diretor', 'gerente', 'tecnico']);
+        table.enu('position', ['diretor', 'gerente', 'tecnico']).notNullable();
         table.timestamp('created_at').defaultTo(knex.fn.now());
         table.timestamp('updated_at').defaultTo(knex.fn.now());
         table.timestamp('deleted_at');
       })
       .then(() =>
         knex.raw(
-          "create unique index employeePosition on employees(positions, departament_id) where positions <> 'tecnico'",
+          "create unique index employeePosition on employees(position, departament_id) where position <> 'tecnico'",
         ),
       )
       .then(() => knex.raw(onUpdateTrigger('employees')));

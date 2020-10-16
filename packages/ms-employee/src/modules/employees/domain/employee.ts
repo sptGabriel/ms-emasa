@@ -14,9 +14,13 @@ export interface IEmployeeProps {
   matricula: string;
   first_name: string;
   last_name: string;
-  departament: Departament;
+  departament_id?: string;
   position: EnumEmployeePostions;
+  departament?: Departament;
 }
+export const isEmployee = (obj: any): obj is Employee => {
+  return obj !== undefined;
+};
 export class Employee implements IEmployeeProps {
   readonly id: string;
   readonly matricula: string;
@@ -37,7 +41,9 @@ export class Employee implements IEmployeeProps {
   public static toDomain = (props: IEmployeeProps) => {
     const employee = Employee.create({
       ...props,
-      departament: Departament.toDomain(props.departament),
+      departament: props.departament
+        ? Departament.toDomain(props.departament)
+        : undefined,
     });
     if (employee.isLeft()) throw employee.value;
     return employee.value;

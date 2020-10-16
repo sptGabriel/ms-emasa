@@ -5,5 +5,5 @@ export interface createEmployeeDTO {
   first_name: string;
   last_name: string;
   departament_id: string;
-  positions: EnumEmployeePostions;
+  position: EnumEmployeePostions;
 }

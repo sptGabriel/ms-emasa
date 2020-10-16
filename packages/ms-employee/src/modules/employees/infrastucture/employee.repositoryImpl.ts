@@ -1,11 +1,11 @@
-import { Employee, IEmployeeProps } from '../domain/employee';
+import { Employee, IEmployeeProps, isEmployee } from '../domain/employee';
 import { BaseRepository } from 'shared/core/utils/entityRepository';
 import { container } from 'tsyringe';
 import { IEmployeeRepository } from './employee.repository';
 import Knex from 'knex';
 import { IMapper } from 'shared/core/infra/mapper';
 import { Database } from '@infra/http/app/DataBase';
-import { createEmployeeDTO } from '../useCases/createEmployee/createEmployee_DTO';
+import { ICreatedEmployee } from '../useCases/createEmployee/createEmployee';
 export class EmployeeRepository
   extends BaseRepository<Employee>
   implements IEmployeeRepository<Employee> {
@@ -59,26 +59,19 @@ export class EmployeeRepository
     }
     return toDomainResults;
   };
-  public create = async (item: Employee): Promise<Employee> => {
+  public create = async (item: Employee): Promise<ICreatedEmployee> => {
     const trx = await this.transactionProvider();
     try {
-      const rawResult = await trx(this.tableName)
-        .insert({
-          id: item.id,
-          first_name: item.first_name,
-          last_name: item.last_name,
-          matricula: item.matricula,
-          positions: item.position,
-          departament_id: item.departament.id,
-        })
+      if (!isEmployee(item)) throw new Error('Invalid data type.');
+      const rawResult = await trx<ICreatedEmployee>('a')
+        .insert(item)
         .returning('*')
         .then(row => row[0]);
       await trx.commit();
       return rawResult;
     } catch (error) {
-      console.log(error);
       trx.rollback();
-      return Promise.reject('Error adding departament Name: ' + error);
+      throw new Error('Error on database');
     }
   };
   public update = async (id: string, item: any): Promise<Employee> => {

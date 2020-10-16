@@ -28,6 +28,9 @@ export class EmployeeController extends BaseController {
   ) => {
     try {
       const dto: createEmployeeDTO = request.body;
+      if (!(dto.position in EnumEmployeePostions)) {
+        throw new Error('Invalid positions');
+      }
       const result = await container
         .resolve(CreateEmployeeUseCase)
         .execute(dto);

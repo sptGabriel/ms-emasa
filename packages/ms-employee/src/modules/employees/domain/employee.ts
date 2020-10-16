@@ -17,7 +17,7 @@ export interface IEmployeeProps {
   departament: Departament;
   position: EnumEmployeePostions;
 }
-export class Employee extends AggregateRoot implements IEmployeeProps {
+export class Employee implements IEmployeeProps {
   readonly id: string;
   readonly matricula: string;
   readonly first_name: string;
@@ -25,19 +25,15 @@ export class Employee extends AggregateRoot implements IEmployeeProps {
   readonly departament: Departament;
   readonly position: EnumEmployeePostions;
   private constructor(props: IEmployeeProps) {
-    super();
     Object.assign(this, props);
     if (!props.id) this.id = v4();
   }
   public static create = (props: IEmployeeProps): Either<Error, Employee> => {
-    const isUUID = props.id ? validate(props.id) : false;
-    if (!isUUID) return left(new Error(`Id not is a valid UUID`));
+    const isUUID = props.id ? validate(props.id) : undefined;
+    if (isUUID === false) return left(new Error(`Id not is a valid UUID`));
     const employee = new Employee(props);
     return right(employee);
   };
-  serialize() {
-    throw new Error('Method not implemented.');
-  }
   public static toDomain = (props: IEmployeeProps) => {
     const employee = Employee.create({
       ...props,

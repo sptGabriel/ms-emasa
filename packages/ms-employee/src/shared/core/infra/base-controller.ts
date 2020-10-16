@@ -1,11 +1,12 @@
-import express from 'express';
+import express, { Router } from 'express';
 export abstract class BaseController {
-  protected request: express.Request;
-  protected response: express.Response;
-  protected abstract executeImpl(): Promise<void | any>;
-  public execute(request: express.Request, response: express.Response): void {
-    this.request = request;
-    this.response = response;
-    this.executeImpl();
+  protected router: Router;
+  protected path: string;
+  constructor() {
+    this.router = Router();
+  }
+  protected abstract initRouter(): void | any;
+  public getRouter() {
+    return this.router;
   }
 }

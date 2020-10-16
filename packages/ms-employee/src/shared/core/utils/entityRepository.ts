@@ -2,7 +2,7 @@ import { Model, ModelClass } from 'objection';
 import Knex from 'knex';
 import { IMapper } from '../infra/mapper';
 export interface IRead<T> {
-  find(id: string): Promise<T>;
+  find(id: string): Promise<T | undefined>;
   findAll(): Promise<T[]>;
 }
 export interface IWrite<T> {
@@ -19,7 +19,7 @@ export abstract class BaseRepository<T> implements IWrite<T>, IRead<T> {
     this.tableName = table;
     this.transactionProvider = this.db.transactionProvider();
   }
-  abstract find(id: string): Promise<T>;
+  abstract find(id: string): Promise<T | undefined>;
   abstract findAll(): Promise<T[]>;
   abstract create(item: Object): Promise<T>;
   abstract update(id: string, item: T): Promise<T>;

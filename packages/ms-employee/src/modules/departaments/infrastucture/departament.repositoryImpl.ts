@@ -6,6 +6,7 @@ import Knex from 'knex';
 import { IMapper } from 'shared/core/infra/mapper';
 import { Database } from '@infra/http/app/DataBase';
 import { Employee } from '@modules/employees/domain/employee';
+import { raw } from 'body-parser';
 export class DepartamentRepository
   extends BaseRepository<Departament>
   implements IDepartamentRepository<Departament> {
@@ -15,14 +16,15 @@ export class DepartamentRepository
   ) {
     super(connection, table);
   }
-  public find = async (id: string): Promise<Departament> => {
+  public find = async (id: string): Promise<Departament | undefined> => {
     const rawDepartament = await this.db
       .select('*')
       .from<IDepartamentProps>(this.tableName)
-      .where('id', id)
+      .where({ id })
       .first()
-      .returning('*');
-    const departamentDomain = Departament.toDomain(rawDepartament[0]);
+      .then(row => row);
+    if (!rawDepartament) return undefined;
+    const departamentDomain = Departament.toDomain(rawDepartament);
     return departamentDomain;
   };
   public findAll = async (): Promise<Departament[]> => {
@@ -98,9 +100,10 @@ export class DepartamentRepository
       .select('*')
       .from<IDepartamentProps>(this.tableName)
       .where({ departament_name })
-      .returning('*');
-    if (rawDepartament.length === 0) return undefined;
-    const departamentDomain = Departament.toDomain(rawDepartament[0]);
+      .first()
+      .then(row => row);
+    if (!rawDepartament) return undefined;
+    const departamentDomain = Departament.toDomain(rawDepartament);
     return departamentDomain;
   };
 }

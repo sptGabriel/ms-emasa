@@ -5,6 +5,7 @@ import { IEmployeeRepository } from './employee.repository';
 import Knex from 'knex';
 import { IMapper } from 'shared/core/infra/mapper';
 import { Database } from '@infra/http/app/DataBase';
+import { createEmployeeDTO } from '../useCases/createEmployee/createEmployee_DTO';
 export class EmployeeRepository
   extends BaseRepository<Employee>
   implements IEmployeeRepository<Employee> {
@@ -30,9 +31,10 @@ export class EmployeeRepository
         `${this.tableName}.departament_id`,
         'departaments.id',
       )
-      .returning('*');
+      .first()
+      .then(row => row);
     if (!rawEmployee) return undefined;
-    const employeeDomain = Employee.toDomain(rawEmployee[0]);
+    const employeeDomain = Employee.toDomain(rawEmployee);
     return employeeDomain;
   };
   public find = async (id: string): Promise<Employee> => {
@@ -57,17 +59,24 @@ export class EmployeeRepository
     }
     return toDomainResults;
   };
-  public create = async (item: any): Promise<Employee> => {
+  public create = async (item: Employee): Promise<Employee> => {
     const trx = await this.transactionProvider();
     try {
-      const rawResult = await trx()
-        .insert(item)
-        .into(this.tableName)
-        .returning('*');
-      const toDomainResult = Employee.toDomain(rawResult[0]);
+      const rawResult = await trx(this.tableName)
+        .insert({
+          id: item.id,
+          first_name: item.first_name,
+          last_name: item.last_name,
+          matricula: item.matricula,
+          positions: item.position,
+          departament_id: item.departament.id,
+        })
+        .returning('*')
+        .then(row => row[0]);
       await trx.commit();
-      return toDomainResult;
+      return rawResult;
     } catch (error) {
+      console.log(error);
       trx.rollback();
       return Promise.reject('Error adding departament Name: ' + error);
     }

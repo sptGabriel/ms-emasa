@@ -7,12 +7,11 @@ export interface IDepartamentProps {
   departament_name: string;
   employees?: Employee[];
 }
-export class Departament extends AggregateRoot implements IDepartamentProps {
+export class Departament implements IDepartamentProps {
   readonly id: string;
   readonly departament_name: string;
   readonly employees: Employee[];
   private constructor(props: IDepartamentProps) {
-    super();
     Object.assign(this, props);
     if (!props.id) this.id = v4();
   }
@@ -29,7 +28,4 @@ export class Departament extends AggregateRoot implements IDepartamentProps {
     if (departament.isLeft()) throw departament.value;
     return departament.value;
   };
-  serialize() {
-    throw new Error('Method not implemented.');
-  }
 }

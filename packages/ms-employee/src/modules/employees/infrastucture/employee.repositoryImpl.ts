@@ -6,6 +6,7 @@ import Knex from 'knex';
 import { IMapper } from 'shared/core/infra/mapper';
 import { Database } from '@infra/http/app/DataBase';
 import { ICreatedEmployee } from '../useCases/createEmployee/createEmployee';
+import { raw } from 'body-parser';
 export class EmployeeRepository
   extends BaseRepository<Employee>
   implements IEmployeeRepository<Employee> {
@@ -35,6 +36,7 @@ export class EmployeeRepository
       .then(row => row);
     if (!rawEmployee) return undefined;
     const employeeDomain = Employee.toDomain(rawEmployee);
+    console.log(employeeDomain);
     return employeeDomain;
   };
   public find = async (id: string): Promise<Employee> => {
@@ -64,12 +66,20 @@ export class EmployeeRepository
     try {
       if (!isEmployee(item)) throw new Error('Invalid data type.');
       const rawResult = await trx<ICreatedEmployee>('a')
-        .insert(item)
+        .insert({
+          first_name: item.first_name,
+          last_name: item.last_name,
+          id: item.id,
+          matricula: item.matricula,
+          position: item.position,
+          departament_id: item.departament.id,
+        })
         .returning('*')
         .then(row => row[0]);
       await trx.commit();
       return rawResult;
     } catch (error) {
+      console.log(error);
       trx.rollback();
       throw new Error('Error on database');
     }

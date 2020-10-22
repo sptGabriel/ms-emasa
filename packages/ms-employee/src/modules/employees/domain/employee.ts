@@ -14,7 +14,6 @@ export interface IEmployeeProps {
   matricula: string;
   first_name: string;
   last_name: string;
-  departament_id?: string;
   position: EnumEmployeePostions;
   departament?: Departament;
 }

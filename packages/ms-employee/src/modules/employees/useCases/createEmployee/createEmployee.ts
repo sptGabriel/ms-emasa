@@ -39,10 +39,12 @@ export class CreateEmployeeUseCase
     if (!departamentExists) return left(new Error('Departament not Exists.'));
     const domainEmployee = Employee.create({
       ...request,
+      departament: departamentExists,
       position: EnumEmployeePostions[request.position],
     });
     if (domainEmployee.isLeft()) return left(domainEmployee.value);
     const employee = await this.employeeRepository.create(domainEmployee.value);
+    console.log(employee);
     return right(employee);
   };
 }

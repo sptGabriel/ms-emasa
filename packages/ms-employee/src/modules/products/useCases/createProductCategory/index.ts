@@ -1,0 +1,1 @@
+export { CreateProductCategoryUseCase } from './createProductCategory';

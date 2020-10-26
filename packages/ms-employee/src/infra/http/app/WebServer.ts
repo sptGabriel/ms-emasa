@@ -8,6 +8,7 @@ import { DepartamentController } from '@modules/departaments/infrastucture';
 import { container } from 'tsyringe';
 import { BaseController } from 'shared/core/infra/base-controller';
 import { EmployeeController } from '@modules/employees/infrastucture';
+import { SupplyController } from '@modules/supply/infrastucture';
 export interface WebServer {
   start(): void;
   getServer(): void;
@@ -27,6 +28,10 @@ export class ExpressServer implements WebServer {
     this.server.use(
       '/',
       container.resolve<BaseController>(EmployeeController).getRouter(),
+    );
+    this.server.use(
+      '/',
+      container.resolve<BaseController>(SupplyController).getRouter(),
     );
     this.server.get('/favico.ico', (req, res) => {
       res.sendStatus(404);

@@ -9,6 +9,7 @@ import { container } from 'tsyringe';
 import { BaseController } from 'shared/core/infra/base-controller';
 import { EmployeeController } from '@modules/employees/infrastucture';
 import { SupplyController } from '@modules/supply/infrastucture';
+import { ProductController } from '@modules/products/infrastucture/product.controller';
 export interface WebServer {
   start(): void;
   getServer(): void;
@@ -32,6 +33,10 @@ export class ExpressServer implements WebServer {
     this.server.use(
       '/',
       container.resolve<BaseController>(SupplyController).getRouter(),
+    );
+    this.server.use(
+      '/',
+      container.resolve<BaseController>(ProductController).getRouter(),
     );
     this.server.get('/favico.ico', (req, res) => {
       res.sendStatus(404);

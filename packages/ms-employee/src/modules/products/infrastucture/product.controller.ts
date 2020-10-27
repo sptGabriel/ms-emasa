@@ -11,29 +11,31 @@ import {
   IProductType,
   IProductInstanceProps,
 } from '../domain/productInstance';
-import { CreateDepartamentUseCase } from '../useCases/createDepartament';
+import { CreateProductCategoryUseCase } from '../useCases/createProductCategory';
+import { createProductCategoryDTO } from '../useCases/createProductCategory/createProductCategory_DTO';
 export class ProductController extends BaseController {
   constructor() {
     super();
-    this.path = '/product';
+    this.path = '/products';
     this.initRouter();
   }
   protected initRouter() {
     this.router.get(`${this.path}`, this.index);
-    this.router.post(`${this.path}/create`, this.createDepartament);
+    this.router.post(`${this.path}/category/create`, this.createCategory);
+    this.router.post(`${this.path}/create`, this.createCategory);
   }
   private index = async (arg0: string, index: any) => {
     throw new Error('Method not implemented.');
   };
-  private createDepartament = async (
+  private createCategory = async (
     request: Request,
     response: Response,
     next: NextFunction,
   ) => {
     try {
-      const dto: IDepartamentProps = request.body;
+      const dto: createProductCategoryDTO = request.body;
       const result = await container
-        .resolve(CreateDepartamentUseCase)
+        .resolve(CreateProductCategoryUseCase)
         .execute(dto);
       if (result.isLeft()) return next(result.value);
       return response.json(result.value);

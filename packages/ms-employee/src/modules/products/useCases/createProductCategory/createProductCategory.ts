@@ -13,7 +13,7 @@ import { createProductCategoryDTO } from './createProductCategory_DTO';
 export class CreateProductCategoryUseCase
   implements
     IUseCase<
-      IProductCategoryProps,
+      createProductCategoryDTO,
       Promise<Either<AppError, ProductCategory>>
     > {
   private productCategoryRepository: ProductCategoryRepository;
@@ -24,19 +24,28 @@ export class CreateProductCategoryUseCase
   ) {
     this.productCategoryRepository = productCategoryRepository;
   }
-  public execute = async (
-    request: createProductCategoryDTO,
-  ): Promise<Either<AppError, ProductCategory>> => {
-    var parent = {} as ProductCategory;
+  public execute = async ({
+    name,
+    parent,
+  }: createProductCategoryDTO): Promise<Either<AppError, ProductCategory>> => {
     const categoryExists = await this.productCategoryRepository.findByName(
-      request.name,
+      name,
     );
-
+    const hasParent = parent
+      ? await this.productCategoryRepository.find(parent)
+      : null;
+    console.log(hasParent);
+    if (hasParent === undefined) {
+      return left(new Error('Category dont Exists.'));
+    }
     if (categoryExists) return left(new Error('Category Already exists.'));
-    const domainCategory = ProductCategory.toDomain();
-    const Category = await this.productCategoryRepository.create(
+    const domainCategory = ProductCategory.toDomain({
+      name,
+      parent: hasParent,
+    });
+    const category = await this.productCategoryRepository.create(
       domainCategory,
     );
-    return right(Category);
+    return right(category);
   };
 }

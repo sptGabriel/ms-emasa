@@ -2,7 +2,7 @@ import { Either, left, right } from '../../../shared/core/utils/result';
 import { validate, v4 } from 'uuid';
 export interface IProductCategoryProps {
   id?: string;
-  parent: ProductCategory | ProductCategory[];
+  parent: ProductCategory | ProductCategory[] | null;
   name: string;
 }
 export const isProductCategory = (obj: any): obj is ProductCategory => {

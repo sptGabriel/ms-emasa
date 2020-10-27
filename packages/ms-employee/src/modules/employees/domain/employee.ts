@@ -28,7 +28,7 @@ export class Employee implements IEmployeeProps {
   readonly departament: Departament;
   readonly position: EnumEmployeePostions;
   private constructor(props: IEmployeeProps) {
-    Object.assign(this, props);
+    Object.assign<Employee, IEmployeeProps>(this, props);
     if (!props.id) this.id = v4();
   }
   public static create = (props: IEmployeeProps): Either<Error, Employee> => {

@@ -20,19 +20,18 @@ export interface ICreatedEmployee {
 }
 @injectable()
 export class CreateEmployeeUseCase
-  implements
-    IUseCase<createEmployeeDTO, Promise<Either<AppError, ICreatedEmployee>>> {
+  implements IUseCase<createEmployeeDTO, Promise<Either<AppError, Employee>>> {
   constructor(
     private departamentRepository = container.resolve(DepartamentRepository),
     private employeeRepository = container.resolve(EmployeeRepository),
   ) {}
   public execute = async (
     request: createEmployeeDTO,
-  ): Promise<Either<AppError, ICreatedEmployee>> => {
+  ): Promise<Either<AppError, Employee>> => {
     const employeeExists = await this.employeeRepository.findbyMatricula(
       request.matricula,
     );
-    if (employeeExists) return left(new Error('Employee Exists.'));
+    if (employeeExists) return left(new Error('Employee Already Exists.'));
     const departamentExists = await this.departamentRepository.find(
       request.departament_id,
     );
@@ -44,7 +43,6 @@ export class CreateEmployeeUseCase
     });
     if (domainEmployee.isLeft()) return left(domainEmployee.value);
     const employee = await this.employeeRepository.create(domainEmployee.value);
-    console.log(employee);
     return right(employee);
   };
 }

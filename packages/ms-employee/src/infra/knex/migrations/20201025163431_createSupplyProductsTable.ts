@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
       .createTable('supplying_products', async table => {
         table.uuid('supply_id').references('supplying.id').notNullable();
         table.uuid('product_id').references('products.id').notNullable();
-        table.primary(['supply_id', 'product_id']);
+        table.unique(['supply_id', 'product_id']);
         table.integer('quantity').notNullable();
         table.timestamp('created_at').defaultTo(knex.fn.now());
         table.timestamp('updated_at').defaultTo(knex.fn.now());

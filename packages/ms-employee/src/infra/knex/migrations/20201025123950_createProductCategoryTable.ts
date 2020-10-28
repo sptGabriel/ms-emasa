@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     return knex.schema // **** udpate
       .createTable('product_categories', async table => {
         table.uuid('id').notNullable().primary();
-        table.uuid('parent').references('product_categories.id');
+        table.uuid('parent_id').references('product_categories.id');
         table.string('name', 100);
         table.timestamp('created_at').defaultTo(knex.fn.now());
         table.timestamp('updated_at').defaultTo(knex.fn.now());

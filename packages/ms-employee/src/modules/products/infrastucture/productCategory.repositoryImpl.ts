@@ -2,6 +2,7 @@ import {
   ProductCategory,
   IProductCategoryProps,
   isProductCategory,
+  IProductCategory,
 } from '../domain/productCategory';
 import { BaseRepository } from 'shared/core/utils/entityRepository';
 import { container } from 'tsyringe';
@@ -58,10 +59,12 @@ export class ProductCategoryRepository
     const trx = await this.transactionProvider();
     try {
       if (!isProductCategory(item)) throw new Error('Invalid data type.');
-      const rawResult = await trx<ProductCategory>(this.tableName)
-        .insert(item)
+      const rawResult = await trx<IProductCategory>(this.tableName)
+        .insert({ id: item.id, name: item.name, parent_id: item.parent_id })
         .returning('*')
-        .then(row => row[0]);
+        .then(row => {
+          return ProductCategory.toDomain(row[0]);
+        });
       await trx.commit();
       return rawResult;
     } catch (error) {

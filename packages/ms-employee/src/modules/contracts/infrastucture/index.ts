@@ -1,3 +1,3 @@
-export { DepartamentRepository } from './departament.repositoryImpl';
-export { DepartamentController } from './departament.controller';
-export { IDepartamentRepository } from './departament.repository';
+export { DepartamentRepository } from './contract.repositoryImpl';
+export { DepartamentController } from './contract.controller';
+export { IDepartamentRepository } from './contract.repository';

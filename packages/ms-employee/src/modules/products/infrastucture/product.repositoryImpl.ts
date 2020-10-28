@@ -10,14 +10,22 @@ export class ProductRepository
   implements IProductRepository<Product> {
   constructor(
     connection: Knex = container.resolve(Database).getConnection(),
-    table: string = 'departaments',
+    table: string = 'products',
   ) {
     super(connection, table);
   }
   public findCodReference = async (
-    name: string,
+    codReference: string,
   ): Promise<Product | undefined> => {
-    throw new Error('Method not implemented.');
+    const rawProduct = await this.db
+      .select('*')
+      .from<Product>(this.tableName)
+      .where({ codReference })
+      .first()
+      .then(row => row);
+    if (!rawProduct) return undefined;
+    const productDomain = Product.toDomain(rawProduct);
+    return productDomain;
   };
   public find = async (id: string): Promise<Product | undefined> => {
     const rawDepartament = await this.db
@@ -46,9 +54,10 @@ export class ProductRepository
   public create = async (item: Product): Promise<Product> => {
     const trx = await this.transactionProvider();
     try {
+      const dataToInsert: Omit<Product, 'category'> = item;
       if (!isProduct(item)) throw new Error('Invalid data type.');
       const rawResult = await trx<Product>(this.tableName)
-        .insert(item)
+        .insert(dataToInsert)
         .returning('*')
         .then(row => row[0]);
       await trx.commit();

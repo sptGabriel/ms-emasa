@@ -15,6 +15,7 @@ export interface IEmployeeProps {
   first_name: string;
   last_name: string;
   position: EnumEmployeePostions;
+  departament_id: string;
   departament?: Departament;
 }
 export const isEmployee = (obj: any): obj is Employee => {
@@ -27,6 +28,7 @@ export class Employee implements IEmployeeProps {
   readonly last_name: string;
   readonly departament: Departament;
   readonly position: EnumEmployeePostions;
+  readonly departament_id: string;
   private constructor(props: IEmployeeProps) {
     Object.assign<Employee, IEmployeeProps>(this, props);
     if (!props.id) this.id = v4();

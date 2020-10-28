@@ -1,4 +1,4 @@
-import { Supplying, ISupplyingProps } from '../domain/supplying';
+import { Supplying, ISupplyingProps, products } from '../domain/supplying';
 import { BaseRepository } from 'shared/core/utils/entityRepository';
 import { container } from 'tsyringe';
 import { ISupplyingRepository } from './supplying.repository';
@@ -38,10 +38,6 @@ export class SupplyingRepository
     return toDomainResults;
   };
   public create = async (item: Supplying): Promise<Supplying> => {
-    // const promisify = (fn: any) => new Promise(resolve => fn(resolve));
-    // const trx: Knex.Transaction = <Knex.Transaction>(
-    //   await promisify(this.db.transaction)
-    // );
     const trx = await this.transactionProvider();
     try {
       const rawResult = await trx(this.tableName).insert(item).returning('*');
@@ -86,6 +82,50 @@ export class SupplyingRepository
     } catch (error) {
       trx.rollback();
       return Promise.reject('Error adding departament Name: ' + error);
+    }
+  };
+  public createSupplyingWithProducts = async (
+    item: Supplying,
+  ): Promise<Supplying> => {
+    const trx = await this.transactionProvider();
+    try {
+      const rawResult = await trx<Supplying>(this.tableName)
+        .insert({
+          arrived: item.arrived,
+          contract_id: item.contract_id,
+          arrivesAt: item.arrivesAt,
+          id: item.id,
+          orderedAt: item.orderedAt,
+          supplier_id: item.supplier_id,
+        })
+        .returning('*')
+        .then(row => {
+          let rowProducts: any[] = item.products.map(product => {
+            return {
+              supply_id: item.id,
+              product_id: product.id,
+              quantity: product.quantity,
+            };
+          });
+          return trx('supplying_products')
+            .insert(rowProducts)
+            .returning('*')
+            .then(item => {
+              return Supplying.toDomain({
+                id: row[0].id,
+                contract_id: row[0].contract_id,
+                arrived: row[0].arrived,
+                supplier_id: row[0].supplier_id,
+                products: rowProducts,
+              });
+            });
+        });
+      await trx.commit();
+      return rawResult;
+    } catch (error) {
+      console.log(error);
+      trx.rollback();
+      throw new Error('Error on database');
     }
   };
 }

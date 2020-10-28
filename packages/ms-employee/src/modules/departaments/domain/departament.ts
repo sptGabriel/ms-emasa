@@ -5,7 +5,6 @@ import { Employee, IEmployeeProps } from '@modules/employees/domain/employee';
 export interface IDepartamentProps {
   id?: string;
   departament_name: string;
-  employees?: Employee[];
 }
 export class Departament implements IDepartamentProps {
   readonly id: string;

@@ -26,22 +26,22 @@ export class CreateProductCategoryUseCase
   }
   public execute = async ({
     name,
-    parent,
+    parent_id,
   }: createProductCategoryDTO): Promise<Either<AppError, ProductCategory>> => {
     const categoryExists = await this.productCategoryRepository.findByName(
       name,
     );
-    const hasParent = parent
-      ? await this.productCategoryRepository.find(parent)
+    if (categoryExists) return left(new Error('Category Already exists.'));
+    const hasParent = parent_id
+      ? await this.productCategoryRepository.find(parent_id)
       : null;
-    console.log(hasParent);
     if (hasParent === undefined) {
       return left(new Error('Category dont Exists.'));
     }
-    if (categoryExists) return left(new Error('Category Already exists.'));
     const domainCategory = ProductCategory.toDomain({
       name,
-      parent: hasParent,
+      parent_id,
+      parent: hasParent ? hasParent : undefined,
     });
     const category = await this.productCategoryRepository.create(
       domainCategory,

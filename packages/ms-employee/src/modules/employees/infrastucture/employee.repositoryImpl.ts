@@ -64,7 +64,7 @@ export class EmployeeRepository
     const trx = await this.transactionProvider();
     try {
       if (!isEmployee(item)) throw new Error('Invalid data type.');
-      const rawResult = await trx(this.tableName)
+      const rawResult = await trx<IEmployeeProps>(this.tableName)
         .insert({
           first_name: item.first_name,
           last_name: item.last_name,
@@ -74,7 +74,7 @@ export class EmployeeRepository
           departament_id: item.departament.id,
         })
         .returning('*')
-        .then((row: Employee[]) => {
+        .then(row => {
           return Employee.toDomain(row[0]);
         });
       await trx.commit();

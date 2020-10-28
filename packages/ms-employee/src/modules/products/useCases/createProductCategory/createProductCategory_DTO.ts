@@ -1,4 +1,4 @@
 export interface createProductCategoryDTO {
   name: string;
-  parent: string | null;
+  parent_id: string | null;
 }

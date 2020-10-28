@@ -27,6 +27,21 @@ export class ProductRepository
     const productDomain = Product.toDomain(rawProduct);
     return productDomain;
   };
+  public findProductIDS = async (
+    id: string[],
+  ): Promise<Product[] | undefined> => {
+    const rowProducts = await this.db
+      .select('*')
+      .from<Product>(this.tableName)
+      .whereIn('id', [id])
+      .then(row => {
+        return row.map(product => {
+          return Product.toDomain(product);
+        });
+      });
+    if (rowProducts.length < 1) return undefined;
+    return rowProducts;
+  };
   public find = async (id: string): Promise<Product | undefined> => {
     const rawDepartament = await this.db
       .select('*')

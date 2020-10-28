@@ -2,10 +2,9 @@ export interface supplyingProducts {
   id: string;
   quantity: string;
 }
-export interface CreateSupplyingDTO {
+export interface CreateProductSupplyingDTO {
   supplier_id: string;
-  contract_id: string;
   arrived: boolean;
   orderedAt: Date;
-  products: supplyingProducts[];
+  suppliedProducts: supplyingProducts[];
 }

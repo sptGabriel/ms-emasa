@@ -2,11 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { BaseController } from 'shared/core/infra/base-controller';
 import { container } from 'tsyringe';
 import { Supplier, ISupplierProps } from '../domain/supplier';
-import { Supplying, ISupplyingProps } from '../domain/supplying';
 import { CreateSupplierUseCase } from '../useCases/createSupplier';
-import { CreateSupplyingUseCase } from '../useCases/createSupplying/createSupplying';
-import { CreateSupplyingDTO } from '../useCases/createSupplying/createSupplyingDTO';
-export class SupplyController extends BaseController {
+export class SupplierController extends BaseController {
   constructor() {
     super();
     this.path = '/supplier';
@@ -15,26 +12,9 @@ export class SupplyController extends BaseController {
   protected initRouter() {
     this.router.get(`${this.path}`, this.index);
     this.router.post(`${this.path}/create`, this.createSupply);
-    this.router.post(`${this.path}/supplying`, this.supplying);
   }
   private index = async (arg0: string, index: any) => {
     throw new Error('Method not implemented.');
-  };
-  private supplying = async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const dto: CreateSupplyingDTO = request.body;
-      const result = await container
-        .resolve(CreateSupplyingUseCase)
-        .execute(dto);
-      if (result.isLeft()) return next(result.value);
-      return response.json(result.value);
-    } catch (error) {
-      next(error);
-    }
   };
   private createSupply = async (
     request: Request,

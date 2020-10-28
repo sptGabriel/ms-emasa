@@ -1,7 +1,7 @@
 import { Either, left, right } from '../../../shared/core/utils/result';
 import { validate, v4 } from 'uuid';
-import { Supplier } from './supplier';
-import { SupplyingProducts } from './supplying_products';
+import { SuppliedProducts, ISuppliedProductsProps } from './supplying_products';
+import { Supplier } from '@modules/supplier/domain/supplier';
 export interface ISupplyingProps {
   id?: string;
   supplier_id: string;
@@ -9,7 +9,7 @@ export interface ISupplyingProps {
   orderedAt?: Date;
   arrivesAt?: Date;
   supplier?: Supplier;
-  supplied_products?: SupplyingProducts[];
+  supplied_products?: SuppliedProducts[] | SuppliedProducts;
 }
 export class Supplying implements ISupplyingProps {
   readonly id: string;
@@ -18,6 +18,7 @@ export class Supplying implements ISupplyingProps {
   readonly arrivesAt: Date;
   readonly arrived: boolean;
   readonly supplier?: Supplier;
+  readonly supplied_products?: SuppliedProducts[] | SuppliedProducts;
   private constructor(props: ISupplyingProps) {
     Object.assign(this, props);
     this.arrivesAt = new Date();

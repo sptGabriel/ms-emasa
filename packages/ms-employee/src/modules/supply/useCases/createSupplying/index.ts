@@ -1,1 +1,0 @@
-export { CreateSupplierUseCase } from './createSupplying';

@@ -7,7 +7,6 @@ export async function up(knex: Knex): Promise<void> {
       .createTable('supplying', async table => {
         table.uuid('id').notNullable().primary();
         table.uuid('supplier_id').notNullable().references('suppliers.id');
-        table.uuid('contract_id').notNullable().references('contracts.id');
         table.boolean('arrived').defaultTo(false);
         table.timestamp('orderedAt').notNullable();
         table.timestamp('arrivesAt').notNullable();

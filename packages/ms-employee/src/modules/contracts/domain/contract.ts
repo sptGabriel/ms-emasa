@@ -1,13 +1,18 @@
 import { Either, left, right } from '../../../shared/core/utils/result';
 import { validate, v4 } from 'uuid';
+import { Supplying } from '@modules/supply/domain/supplying';
 export interface IContract {
   id?: string;
   name: string;
   signature: string;
+  supply_id: string;
+  supply?: Supplying;
 }
 export class Contract implements IContract {
   readonly id: string;
   readonly name: string;
+  readonly supply_id: string;
+  readonly supply?: Supplying;
   readonly signature: string;
   private constructor(props: IContract) {
     Object.assign(this, props);

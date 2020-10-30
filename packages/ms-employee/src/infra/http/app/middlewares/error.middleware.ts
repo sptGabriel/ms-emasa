@@ -10,7 +10,7 @@ export function ErrorMiddleware(
   if (!(error instanceof AppError)) {
     return response.status(500).json({
       status: 'error',
-      message: 'Internal server error',
+      message: error.message,
     });
   }
   return response.status(error.code).json(error.message);

@@ -4,7 +4,10 @@ import { container } from 'tsyringe';
 import { ISupplyingRepository } from './supplying.repository';
 import Knex from 'knex';
 import { Database } from '@infra/http/app/DataBase';
-import { SuppliedProducts } from '../domain/supplying_products';
+import {
+  ISuppliedProductsProps,
+  SuppliedProducts,
+} from '../domain/supplying_products';
 export class SupplyingRepository
   extends BaseRepository<Supplying>
   implements ISupplyingRepository<Supplying> {
@@ -107,17 +110,20 @@ export class SupplyingRepository
   };
   public createSupplying = async (
     supply: Supplying,
-    suppliedProducts: SuppliedProducts[],
-  ) => {
+    productsSupplied: SuppliedProducts[],
+  ): Promise<Supplying> => {
     const trx = await this.transactionProvider();
     try {
-      const products_id = suppliedProducts.map(product => product.product_id);
-      // const rawResult = await trx<SuppliedProducts>('supplied_products')
-      //   .insert(suppliedProducts)
-      //   .returning('*')
-      //   .then(row => {
-      //     return Supplying.toDomain({ ...supply, supplied_products: row });
-      //   });
+      const rawResult = await trx
+        .insert(supply.toPersistence())
+        .into(this.tableName)
+        .returning('*')
+        .then(row => {
+          const products = productsSupplied.map(productSupplied =>
+            productSupplied.toPersistence(),
+          );
+          return trx.insert(products).into('supplied_productss').returning('*');
+        });
       trx.commit();
       return rawResult;
     } catch (error) {

@@ -16,7 +16,7 @@ export class ProvideProductsController extends BaseController {
   }
   protected initRouter() {
     this.router.get(`${this.path}`, this.index);
-    this.router.post(`${this.path}/products`, this.provideProducts);
+    this.router.post(`${this.path}/products`, this.createProductSupplying);
     this.router.post(`${this.path}/:supply_id`, this.provideProducts);
   }
   private index = async (arg0: string, index: any) => {

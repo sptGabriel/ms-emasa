@@ -27,20 +27,19 @@ export class ProductRepository
     const productDomain = Product.toDomain(rawProduct);
     return productDomain;
   };
-  public findProductIDS = async (
-    id: string[],
-  ): Promise<Product[] | undefined> => {
+  public findProductIDS = async (ids: string[]): Promise<Product[]> => {
     const rowProducts = await this.db
       .select('*')
       .from<Product>(this.tableName)
-      .whereIn('id', [id])
+      .whereIn('id', ids)
       .then(row => {
-        return row.map(product => {
-          return Product.toDomain(product);
-        });
+        if (row.length === 0) throw new Error(`Products ${ids} dont exist`);
+        return row;
       });
-    if (rowProducts.length < 1) return undefined;
-    return rowProducts;
+    const domainProducts = rowProducts.map(product => {
+      return Product.toDomain(product);
+    });
+    return domainProducts;
   };
   public find = async (id: string): Promise<Product | undefined> => {
     const rawDepartament = await this.db
